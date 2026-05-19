@@ -1,0 +1,30 @@
+--DROP DATABASE IF EXISTS forum;
+--CREATE DATABASE forum;
+--USE forum;
+
+CREATE TYPE USER_ROLE AS ENUM('USER', 'ADMIN');
+
+CREATE TABLE topics(
+  id INTEGER PRIMARY KEY,
+  title CHAR(128) NOT NULL,
+  description TEXT NOT NULL,
+  rules TEXT NOT NULL
+);
+
+CREATE TABLE users(
+  uuid UUID PRIMARY KEY,
+  username CHAR(64) UNIQUE NOT NULL,
+  password CHAR(128) NOT NULL,
+  email CHAR(128) UNIQUE NOT NULL,
+  role USER_ROLE NOT NULL
+);
+
+CREATE TABLE posts(
+  uuid UUID PRIMARY KEY,
+  title CHAR(128) NOT NULL,
+  content_text TEXT NOT NULL,
+  id_user UUID NOT NULL,
+  CONSTARINT fk_id_user
+    FOREIGN KEY (id_user)
+    REFERENCES users(uuid)
+);
