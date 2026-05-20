@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from uuid import UUID
 
 # What we accept on POST /users
 class UserCreate(BaseModel):
@@ -8,7 +9,7 @@ class UserCreate(BaseModel):
 
 # What we return — includes id, never a raw DB object
 class UserResponse(BaseModel):
-    uuid: str
+    uuid: UUID
     username: str
     email: str
 

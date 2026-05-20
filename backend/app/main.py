@@ -22,3 +22,4 @@ app.include_router(user_router.router)
 @app.get("/")
 async def root():
     return {"message": "Benvenuto nell'API Forum"}
+

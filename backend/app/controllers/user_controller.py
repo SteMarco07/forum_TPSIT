@@ -15,7 +15,7 @@ def get_user_by_id(user_uuid: int, db: Session):
 
 def create_user(data: UserCreate, db: Session):
     hashed = hash_password(data.password)
-    user = User(name=data.name, email=data.email, password=hashed)
+    user = User(username=data.username, email=data.email, password=hashed, role="USER")
     db.add(user)
     db.commit()
     db.refresh(user)
