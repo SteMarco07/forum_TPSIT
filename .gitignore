@@ -1,0 +1,10 @@
+backend/.venv
+backend/.env
+backend/.python-version
+backend/pyproject.toml
+backend/uv.lock
+backend/app/routers/__pycache__
+backend/app/models/__pycache__
+backend/app/core/__pycache__
+backend/app/controllers/__pycache__
+backend/app/__pycache__
