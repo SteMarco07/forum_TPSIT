@@ -19,7 +19,7 @@ services:
   app:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: app/Dockerfile
     expose:
       - "8000"
     volumes:
@@ -35,7 +35,7 @@ services:
   auth:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: auth/Dockerfile
     expose:
       - "8001"
     volumes:

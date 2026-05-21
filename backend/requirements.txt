@@ -5,8 +5,6 @@ psycopg2-binary
 python-dotenv
 pydantic-settings
 python-jose[cryptography]
-passlib[bcrypt]
+bcrypt
+pydantic[email]
 supabase
-python-multipart
-email-validator
-PyJWT
