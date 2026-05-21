@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Reverse Proxy
   caddy:
     image: caddy:alpine
     ports:
@@ -13,9 +12,8 @@ services:
       - caddy_config:/config
     depends_on:
       - app
-    restart: unless-stopped
 
-  # FastAPI Backend
+
   app:
     build: ./backend
     expose:
@@ -24,26 +22,8 @@ services:
       - ./backend:/app
     environment:
       - PYTHONUNBUFFERED=1
-    env_file:
-      - ./tmp/.env
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
-    restart: unless-stopped
-
-  # FastAPI auth
-  auth:
-    build: ./backend
-    expose:
-      - "8001"
-    volumes:
-      - ./backend:/app
-    environment:
-      - PYTHONUNBUFFERED=1
-    env_file:
-      - ./tmp/.env
-    command: uvicorn auth.main:app --host 0.0.0.0 --port 8001
     restart: unless-stopped
 
 volumes:
   caddy_data:
   caddy_config:
-  postgres_data:
