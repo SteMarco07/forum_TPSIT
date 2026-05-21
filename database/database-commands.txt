@@ -22,7 +22,8 @@ CREATE TABLE posts(
     uuid UUID PRIMARY KEY,
     title CHAR(128) NOT NULL,
     content_text TEXT NOT NULL,
-    id_user UUID NOT NULL REFERENCES users(uuid)
+    id_user UUID NOT NULL REFERENCES users(uuid),
+    id_topic INTEGER NOT NULL REFERENCES topics(id)
 );
 
 CREATE TABLE comments(
