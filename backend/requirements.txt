@@ -7,3 +7,8 @@ pydantic-settings
 python-jose[cryptography]
 bcrypt
 pydantic[email]
+passlib[bcrypt]
+supabase
+python-multipart
+email-validator
+PyJWT

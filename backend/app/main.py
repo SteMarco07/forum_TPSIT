@@ -19,7 +19,7 @@ app.add_middleware(
 app.include_router(auth_router.router)
 app.include_router(user_router.router)
 
-@app.get("/")
+@app.get("/test")
 async def root():
     return {"message": "Benvenuto nell'API Forum"}
 
