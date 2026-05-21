@@ -6,4 +6,7 @@ python-dotenv
 pydantic-settings
 python-jose[cryptography]
 passlib[bcrypt]
-pydantic[email]
+supabase
+python-multipart
+email-validator
+PyJWT
