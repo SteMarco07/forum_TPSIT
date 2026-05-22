@@ -1,12 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import Base, engine
+from sqlmodel import SQLModel
+from app.database import engine
+from app.models.user_model import User
+from app.models.topic_model import Topic
 from app.routers import user_router, auth_router, topic_router
 
-# Creates tables if they don't exist (use Alembic for migrations in production)
-Base.metadata.create_all(bind=engine)
+SQLModel.metadata.create_all(engine)  # no bind= keyword here
 
-app = FastAPI(title="Forum TPSIT API", version="0.1.0")
+app = FastAPI(title="My API")
 
 app.add_middleware(
     CORSMiddleware,

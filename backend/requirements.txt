@@ -12,3 +12,4 @@ supabase
 python-multipart
 email-validator
 PyJWT
+sqlmodel

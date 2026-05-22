@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from uuid import UUID
 from app.database import get_db
-from app.schemas.topic_schema import TopicCreate, TopicResponse
 from app.controllers import topic_controller
 from app.core.dependencies import get_current_user
+from app.models.topic_model import TopicCreate, TopicResponse
 from app.models.user_model import User
 
 router = APIRouter(prefix="/topics", tags=["Topics"])

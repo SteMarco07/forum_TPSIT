@@ -1,5 +1,6 @@
+from sqlmodel import SQLModel
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import sessionmaker
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -16,10 +17,6 @@ settings = Settings()
 engine = create_engine(settings.database_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-class Base(DeclarativeBase):
-    pass
-
-# Dependency injected into controllers — like a DI container in Slim
 def get_db():
     db = SessionLocal()
     try:

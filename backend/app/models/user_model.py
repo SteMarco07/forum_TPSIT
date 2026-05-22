@@ -1,18 +1,20 @@
-from sqlalchemy import Column, String, text
-from sqlalchemy.dialects.postgresql import UUID
-from app.database import Base
-import uuid
+from sqlmodel import SQLModel, Field
+from uuid import UUID, uuid4
+from typing import Optional
 
-class User(Base):
+class UserBase(SQLModel):
+    name: str
+    email: str
+    role: str = "user"
+
+class UserCreate(UserBase):
+    password: str
+
+class User(UserBase, table=True):
     __tablename__ = "users"
+    
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    password: str
 
-    uuid = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,      # SQLAlchemy generates the UUID in Python
-        server_default=text("gen_random_uuid()"),  # fallback for raw SQL inserts
-    )
-    username = Column(String, unique=True, nullable=False)
-    email = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
-    role = Column(String, nullable=False, default="USER")
+class UserResponse(UserBase):
+    id: UUID

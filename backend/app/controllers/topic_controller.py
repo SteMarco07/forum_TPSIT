@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from app.models.topic_model import Topic
-from app.schemas.topic_schema import TopicCreate
+from app.models.topic_model import Topic, TopicCreate
 from uuid import UUID
 
 def get_all_topics(db: Session):
