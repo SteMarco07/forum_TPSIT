@@ -1,2 +1,12 @@
 ./backend/.env
 ./frontend/.env
+
+node_modules/
+**/node_modules/
+
+# Optional: log & env
+npm-debug.log*
+yarn-error.log*
+.env
+.DS_Store
+.expo/
