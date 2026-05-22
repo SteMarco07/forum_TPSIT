@@ -5,22 +5,22 @@ CREATE TYPE USER_ROLE AS ENUM('USER', 'ADMIN');
 
 CREATE TABLE topics(
     id SERIAL PRIMARY KEY,
-    title CHAR(128) NOT NULL,
+    title VARCHAR NOT NULL,
     description TEXT NOT NULL,
     rules TEXT NOT NULL
 );
 
 CREATE TABLE users(
     uuid UUID PRIMARY KEY,
-    username CHAR(64) UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    email CHAR(128) UNIQUE NOT NULL,
+    username VARCHAR UNIQUE NOT NULL,
+    password VARCHAR NOT NULL,
+    email VARCHAR UNIQUE NOT NULL,
     role USER_ROLE NOT NULL
 );
 
 CREATE TABLE posts(
     uuid UUID PRIMARY KEY,
-    title CHAR(128) NOT NULL,
+    title VARCHAR NOT NULL,
     content_text TEXT NOT NULL,
     id_user UUID NOT NULL REFERENCES users(uuid),
     id_topic INTEGER NOT NULL REFERENCES topics(id)
@@ -53,7 +53,7 @@ CREATE TABLE subs_to_topic(
 
 CREATE TABLE moderators(
     id SERIAL PRIMARY KEY,
-    role CHAR(128) NOT NULL,
+    role VARCHAR NOT NULL,
     id_user UUID NOT NULL REFERENCES users(uuid),
     id_topic INTEGER NOT NULL REFERENCES topics(id)
 );
