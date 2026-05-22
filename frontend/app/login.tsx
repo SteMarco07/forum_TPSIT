@@ -24,27 +24,51 @@ export default function Login() {
   }
 
   return (
-    <Box className="flex-1 bg-background px-6 py-8">
-      <Center className="gap-4">
-        <Text className="text-2xl font-semibold">Accedi</Text>
-        <Box className="w-full max-w-md">
-          <Input placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none">
-            <InputField />
-          </Input>
-          <Input placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry className="mt-3">
-            <InputField />
-          </Input>
+    <Box className="flex-1 bg-background px-6 py-12">
+      <Center className="gap-6">
+        <Text className="text-2xl font-semibold text-foreground">Accedi</Text>
 
-          <Button className="mt-4" onPress={onSubmit}>
-            <ButtonText>Accedi</ButtonText>
-          </Button>
-
-          <Center className="mt-4">
-            <Text>Non hai un account?</Text>
-            <TouchableOpacity onPress={() => router.push('/register')}>
-              <Text className="text-primary"> Registrati</Text>
+        {/* Card container - force lighter card on light and keep readable in dark */}
+        <Box className="w-full max-w-md bg-white/95 dark:bg-card p-6 rounded-xl shadow-lg border border-[rgba(10,10,10,0.06)]">
+          {/* Top segmented switch */}
+          <Box className="flex-row bg-muted rounded-md p-1 mb-4">
+            <TouchableOpacity
+              onPress={() => router.push('/login')}
+              className="flex-1 rounded-md py-2 items-center justify-center"
+              style={{ backgroundColor: 'transparent' }}
+            >
+              <Text className="text-sm font-medium text-foreground">Accedi</Text>
             </TouchableOpacity>
-          </Center>
+            <TouchableOpacity
+              onPress={() => router.push('/register')}
+              className="flex-1 rounded-md py-2 items-center justify-center bg-transparent"
+            >
+              <Text className="text-sm font-medium text-muted-foreground">Registrati</Text>
+            </TouchableOpacity>
+          </Box>
+
+          <Box className="mb-3">
+            <Text className="text-sm text-muted-foreground mb-2">Email</Text>
+            <Box className="rounded-md border border-border overflow-hidden">
+              <Input placeholder="Inserisci la tua email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none">
+                <InputField />
+              </Input>
+            </Box>
+          </Box>
+
+          <Box className="mb-3">
+            <Text className="text-sm text-muted-foreground mb-2">Password</Text>
+            <Box className="rounded-md border border-border overflow-hidden">
+              <Input placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry>
+                <InputField />
+              </Input>
+            </Box>
+          </Box>
+
+          {/* Visible, full-width primary button */}
+          <Button className="mt-4 w-full bg-primary shadow-md" onPress={onSubmit}>
+            <ButtonText className="text-primary-foreground">Accedi</ButtonText>
+          </Button>
         </Box>
       </Center>
     </Box>
