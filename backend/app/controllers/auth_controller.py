@@ -7,15 +7,11 @@ from app.core.security import verify_password, create_access_token, hash_passwor
 def login(data: LoginRequest, db: Session) -> TokenResponse:
     user = db.query(User).filter(User.email == data.email).first()
 
-    print(f"User found: {user is not None}")
-    print(f"Stored hash: {user.password if user else 'N/A'}")
-    print(f"Verify result: {verify_password(data.password, user.password) if user else False}")
-
     if not user or not verify_password(data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
         )
 
-    token = create_access_token(subject=user.email)
+    token = create_access_token(subject=str(user.uuid))
     return TokenResponse(access_token=token)
