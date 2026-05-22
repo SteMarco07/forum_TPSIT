@@ -6,7 +6,8 @@ from typing import Optional
 # Shared base — fields common to all variants
 class TopicBase(SQLModel):
     title: str
-    body: str
+    description: str
+    rules: str
 
 # Input schema — what POST /topics accepts (replaces TopicCreate)
 class TopicCreate(TopicBase):
@@ -23,4 +24,3 @@ class Topic(TopicBase, table=True):
 class TopicResponse(TopicBase):
     id: UUID
     author_id: UUID
-    created_at: datetime

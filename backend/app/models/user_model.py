@@ -3,9 +3,9 @@ from uuid import UUID, uuid4
 from typing import Optional
 
 class UserBase(SQLModel):
-    name: str
+    username: str
     email: str
-    role: str = "user"
+    role: str = "USER"
 
 class UserCreate(UserBase):
     password: str
