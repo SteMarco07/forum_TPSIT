@@ -1,18 +1,21 @@
-from sqlalchemy import Column, String, text
-from sqlalchemy.dialects.postgresql import UUID
-from app.database import Base
-import uuid
+from sqlmodel import SQLModel, Field
+from uuid import UUID, uuid4
+from typing import Optional
 
-class Comment(Base):
+class CommentBase(SQLModel):
+    content_text: str
+
+class CommentCreate(CommentBase):
+    post_id: UUID
+
+class Comment(CommentBase, table=True):
     __tablename__ = "comments"
 
-    uuid = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,      # SQLAlchemy generates the UUID in Python
-        server_default=text("gen_random_uuid()"),  # fallback for raw SQL inserts
-    )
-    content = Column(String, nullable=False)
-    user_id = Column(UUID(as_uuid=True), nullable=False)
-    post_id = Column(UUID(as_uuid=True), nullable=False)
-    
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    author_id: UUID = Field(foreign_key="users.id")
+    post_id: UUID = Field(foreign_key="posts.id")
+
+class CommentResponse(CommentBase):
+    id: UUID
+    author_id: UUID
+    post_id: UUID
