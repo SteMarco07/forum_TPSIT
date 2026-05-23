@@ -5,72 +5,155 @@ import { Center } from '@/components/ui/center';
 import { Text } from '@/components/ui/text';
 import { Input, InputField } from '@/components/ui/input';
 import { Button, ButtonText } from '@/components/ui/button';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Mail, Lock, LogIn } from 'lucide-react-native';
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({ email: '', password: '' });
+
+  function validateEmail(email: string) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
 
   function onSubmit() {
-    if (!email || !password) {
-      // minimal validation
-      alert('Compila tutti i campi');
-      return;
+    const newErrors = { email: '', password: '' };
+    
+    if (!email) {
+      newErrors.email = 'Email richiesta';
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'Email non valida';
     }
-    // TODO: replace with real auth logic
-    alert('Login eseguito (demo)');
+    
+    if (!password) {
+      newErrors.password = 'Password richiesta';
+    } else if (password.length < 6) {
+      newErrors.password = 'Minimo 6 caratteri';
+    }
+
+    setErrors(newErrors);
+
+    if (!newErrors.email && !newErrors.password) {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        alert('Login eseguito (demo)');
+      }, 1500);
+    }
   }
 
   return (
-    <Box className="flex-1 bg-background px-6 py-12">
-      <Center className="gap-6">
-        <Text className="text-2xl font-semibold text-foreground">Accedi</Text>
-
-        {/* Card container - force lighter card on light and keep readable in dark */}
-        <Box className="w-full max-w-md bg-white/95 dark:bg-card p-6 rounded-xl shadow-lg border border-[rgba(10,10,10,0.06)]">
-          {/* Top segmented switch */}
-          <Box className="flex-row bg-muted rounded-md p-1 mb-4">
-            <TouchableOpacity
-              onPress={() => router.push('/login')}
-              className="flex-1 rounded-md py-2 items-center justify-center"
-              style={{ backgroundColor: 'transparent' }}
-            >
-              <Text className="text-sm font-medium text-foreground">Accedi</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => router.push('/register')}
-              className="flex-1 rounded-md py-2 items-center justify-center bg-transparent"
-            >
-              <Text className="text-sm font-medium text-muted-foreground">Registrati</Text>
-            </TouchableOpacity>
-          </Box>
-
-          <Box className="mb-3">
-            <Text className="text-sm text-muted-foreground mb-2">Email</Text>
-            <Box className="rounded-md border border-border overflow-hidden">
-              <Input placeholder="Inserisci la tua email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none">
-                <InputField />
-              </Input>
+    <ScrollView className="flex-1 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <Center className="min-h-screen px-6 py-12">
+        <Box className="w-full max-w-sm gap-8">
+          {/* Header */}
+          <Box className="items-center gap-2">
+            <Box className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 items-center justify-center mb-2">
+              <LogIn size={32} color="#fff" />
             </Box>
+            <Text className="text-4xl font-bold text-white">Accedi</Text>
+            <Text className="text-sm text-slate-400 text-center">
+              Benvenuto nel forum della TPSIT
+            </Text>
           </Box>
 
-          <Box className="mb-3">
-            <Text className="text-sm text-muted-foreground mb-2">Password</Text>
-            <Box className="rounded-md border border-border overflow-hidden">
-              <Input placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry>
-                <InputField />
-              </Input>
+          {/* Card container */}
+          <Box className="bg-gradient-to-b from-slate-800 to-slate-800/50 p-6 rounded-2xl border border-slate-700/50 shadow-2xl gap-4">
+            {/* Segmented switch */}
+            <Box className="flex-row bg-slate-900/80 rounded-xl p-1 border border-slate-700/50">
+              <TouchableOpacity
+                onPress={() => router.push('/login')}
+                className="flex-1 rounded-lg py-3 items-center justify-center bg-blue-600"
+              >
+                <Text className="text-sm font-semibold text-white">Accedi</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push('/register')}
+                className="flex-1 rounded-lg py-3 items-center justify-center"
+              >
+                <Text className="text-sm font-semibold text-slate-400">Registrati</Text>
+              </TouchableOpacity>
             </Box>
-          </Box>
 
-          {/* Visible, full-width primary button */}
-          <Button className="mt-4 w-full bg-primary shadow-md" onPress={onSubmit}>
-            <ButtonText className="text-primary-foreground">Accedi</ButtonText>
-          </Button>
+            {/* Email Input */}
+            <Box>
+              <Text className="text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wide">
+                Email
+              </Text>
+              <Box
+                className={`flex-row items-center rounded-lg border px-3 py-2.5 bg-slate-900/50 ${
+                  errors.email ? 'border-red-500/50' : 'border-slate-600/50'
+                }`}
+              >
+                <Mail size={18} color={errors.email ? '#ef4444' : '#94a3b8'} />
+                <Input
+                  placeholder="nome@esempio.it"
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (errors.email) setErrors({ ...errors, email: '' });
+                  }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  className="flex-1 ml-3 text-white"
+                >
+                  <InputField className="text-white placeholder:text-slate-500" />
+                </Input>
+              </Box>
+              {errors.email ? (
+                <Text className="text-xs text-red-400 mt-1.5">{errors.email}</Text>
+              ) : null}
+            </Box>
+
+            {/* Password Input */}
+            <Box>
+              <Box className="flex-row justify-between items-center mb-1.5">
+                <Text className="text-xs font-semibold text-slate-300 uppercase tracking-wide">
+                  Password
+                </Text>
+              </Box>
+              <Box
+                className={`flex-row items-center rounded-lg border px-3 py-2.5 bg-slate-900/50 ${
+                  errors.password ? 'border-red-500/50' : 'border-slate-600/50'
+                }`}
+              >
+                <Lock size={18} color={errors.password ? '#ef4444' : '#94a3b8'} />
+                <Input
+                  placeholder="••••••••"
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (errors.password) setErrors({ ...errors, password: '' });
+                  }}
+                  secureTextEntry
+                  className="flex-1 ml-3 text-white"
+                >
+                  <InputField className="text-white placeholder:text-slate-500" />
+                </Input>
+              </Box>
+              {errors.password ? (
+                <Text className="text-xs text-red-400 mt-1.5">{errors.password}</Text>
+              ) : null}
+            </Box>
+
+            {/* Login Button */}
+            <Button
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 py-3 mt-5 rounded-lg shadow-lg active:shadow-md transition-all"
+              onPress={onSubmit}
+              disabled={isLoading}
+            >
+              <ButtonText className="text-white font-semibold text-base">
+                {isLoading ? 'Accesso in corso...' : 'Accedi'}
+              </ButtonText>
+            </Button>
+          </Box>
         </Box>
       </Center>
-    </Box>
+    </ScrollView>
   );
 }

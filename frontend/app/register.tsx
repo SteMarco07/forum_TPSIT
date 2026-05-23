@@ -5,8 +5,9 @@ import { Center } from '@/components/ui/center';
 import { Text } from '@/components/ui/text';
 import { Input, InputField } from '@/components/ui/input';
 import { Button, ButtonText } from '@/components/ui/button';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { User, Mail, Lock, CheckCircle2 } from 'lucide-react-native';
 
 export default function Register() {
   const router = useRouter();
@@ -14,88 +15,220 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({ username: '', email: '', password: '', confirm: '' });
+
+  function validateEmail(email: string) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
+  function validateUsername(username: string) {
+    return username.length >= 3 && /^[a-zA-Z0-9_]+$/.test(username);
+  }
 
   function onSubmit() {
-    if (!username || !email || !password || !confirm) {
-      alert('Compila tutti i campi');
-      return;
+    const newErrors = { username: '', email: '', password: '', confirm: '' };
+
+    if (!username) {
+      newErrors.username = 'Username richiesto';
+    } else if (!validateUsername(username)) {
+      newErrors.username = 'Min 3 caratteri, solo lettere e numeri';
     }
-    if (password !== confirm) {
-      alert('Le password non coincidono');
-      return;
+
+    if (!email) {
+      newErrors.email = 'Email richiesta';
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'Email non valida';
     }
-    // TODO: implement registration logic
-    alert('Registrazione completata (demo)');
-    router.push('/login');
+
+    if (!password) {
+      newErrors.password = 'Password richiesta';
+    } else if (password.length < 6) {
+      newErrors.password = 'Minimo 6 caratteri';
+    }
+
+    if (!confirm) {
+      newErrors.confirm = 'Conferma richiesta';
+    } else if (password !== confirm) {
+      newErrors.confirm = 'Le password non coincidono';
+    }
+
+    setErrors(newErrors);
+
+    if (!newErrors.username && !newErrors.email && !newErrors.password && !newErrors.confirm) {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        alert('Registrazione completata (demo)');
+        router.push('/login');
+      }, 1500);
+    }
   }
 
   return (
-    <Box className="flex-1 bg-background px-6 py-12">
-      <Center className="gap-6">
-        <Text className="text-2xl font-semibold text-foreground">Registrati</Text>
+    <ScrollView className="flex-1 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <Center className="min-h-screen px-6 py-12">
+        <Box className="w-full max-w-sm gap-8">
+          {/* Header */}
+          <Box className="items-center gap-2">
+            <Box className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-600 items-center justify-center mb-2">
+              <User size={32} color="#fff" />
+            </Box>
+            <Text className="text-4xl font-bold text-white">Registrati</Text>
+            <Text className="text-sm text-slate-400 text-center">
+              Unisciti al nostro forum
+            </Text>
+          </Box>
 
-        {/* Card container - lighter */}
-        <Box className="w-full max-w-md bg-white/95 dark:bg-card p-6 rounded-xl shadow-lg border border-[rgba(10,10,10,0.06)]">
+          {/* Card container */}
+          <Box className="bg-gradient-to-b from-slate-800 to-slate-800/50 p-6 rounded-2xl border border-slate-700/50 shadow-2xl gap-4">
+            {/* Segmented switch */}
+            <Box className="flex-row bg-slate-900/80 rounded-xl p-1 border border-slate-700/50">
+              <TouchableOpacity
+                onPress={() => router.push('/login')}
+                className="flex-1 rounded-lg py-3 items-center justify-center"
+              >
+                <Text className="text-sm font-semibold text-slate-400">Accedi</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push('/register')}
+                className="flex-1 rounded-lg py-3 items-center justify-center bg-green-600"
+              >
+                <Text className="text-sm font-semibold text-white">Registrati</Text>
+              </TouchableOpacity>
+            </Box>
 
-          {/* Top segmented switch */}
-          <Box className="flex-row bg-muted rounded-md p-1 mb-4">
-            <TouchableOpacity
-              onPress={() => router.push('/login')}
-              className="flex-1 rounded-md py-2 items-center justify-center"
+            {/* Username Input */}
+            <Box>
+              <Text className="text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wide">
+                Username
+              </Text>
+              <Box
+                className={`flex-row items-center rounded-lg border px-3 py-2.5 bg-slate-900/50 ${
+                  errors.username ? 'border-red-500/50' : 'border-slate-600/50'
+                }`}
+              >
+                <User size={18} color={errors.username ? '#ef4444' : '#94a3b8'} />
+                <Input
+                  placeholder="nome_utente"
+                  value={username}
+                  onChangeText={(text) => {
+                    setUsername(text);
+                    if (errors.username) setErrors({ ...errors, username: '' });
+                  }}
+                  autoCapitalize="none"
+                  className="flex-1 ml-3 text-white"
+                >
+                  <InputField className="text-white placeholder:text-slate-500" />
+                </Input>
+              </Box>
+              {errors.username ? (
+                <Text className="text-xs text-red-400 mt-1.5">{errors.username}</Text>
+              ) : null}
+            </Box>
+
+            {/* Email Input */}
+            <Box>
+              <Text className="text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wide">
+                Email
+              </Text>
+              <Box
+                className={`flex-row items-center rounded-lg border px-3 py-2.5 bg-slate-900/50 ${
+                  errors.email ? 'border-red-500/50' : 'border-slate-600/50'
+                }`}
+              >
+                <Mail size={18} color={errors.email ? '#ef4444' : '#94a3b8'} />
+                <Input
+                  placeholder="nome@esempio.it"
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (errors.email) setErrors({ ...errors, email: '' });
+                  }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  className="flex-1 ml-3 text-white"
+                >
+                  <InputField className="text-white placeholder:text-slate-500" />
+                </Input>
+              </Box>
+              {errors.email ? (
+                <Text className="text-xs text-red-400 mt-1.5">{errors.email}</Text>
+              ) : null}
+            </Box>
+
+            {/* Password Input */}
+            <Box>
+              <Text className="text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wide">
+                Password
+              </Text>
+              <Box
+                className={`flex-row items-center rounded-lg border px-3 py-2.5 bg-slate-900/50 ${
+                  errors.password ? 'border-red-500/50' : 'border-slate-600/50'
+                }`}
+              >
+                <Lock size={18} color={errors.password ? '#ef4444' : '#94a3b8'} />
+                <Input
+                  placeholder="••••••••"
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (errors.password) setErrors({ ...errors, password: '' });
+                  }}
+                  secureTextEntry
+                  className="flex-1 ml-3 text-white"
+                >
+                  <InputField className="text-white placeholder:text-slate-500" />
+                </Input>
+              </Box>
+              {errors.password ? (
+                <Text className="text-xs text-red-400 mt-1.5">{errors.password}</Text>
+              ) : null}
+            </Box>
+
+            {/* Confirm Password Input */}
+            <Box>
+              <Text className="text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wide">
+                Conferma Password
+              </Text>
+              <Box
+                className={`flex-row items-center rounded-lg border px-3 py-2.5 bg-slate-900/50 ${
+                  errors.confirm ? 'border-red-500/50' : 'border-slate-600/50'
+                }`}
+              >
+                <CheckCircle2 size={18} color={errors.confirm ? '#ef4444' : '#94a3b8'} />
+                <Input
+                  placeholder="••••••••"
+                  value={confirm}
+                  onChangeText={(text) => {
+                    setConfirm(text);
+                    if (errors.confirm) setErrors({ ...errors, confirm: '' });
+                  }}
+                  secureTextEntry
+                  className="flex-1 ml-3 text-white"
+                >
+                  <InputField className="text-white placeholder:text-slate-500" />
+                </Input>
+              </Box>
+              {errors.confirm ? (
+                <Text className="text-xs text-red-400 mt-1.5">{errors.confirm}</Text>
+              ) : null}
+            </Box>
+
+            {/* Register Button */}
+            <Button
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 py-3 mt-5 rounded-lg shadow-lg active:shadow-md transition-all"
+              onPress={onSubmit}
+              disabled={isLoading}
             >
-              <Text className="text-sm font-medium text-muted-foreground">Accedi</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => router.push('/register')}
-              className="flex-1 rounded-md py-2 items-center justify-center bg-transparent"
-            >
-              <Text className="text-sm font-medium text-foreground">Registrati</Text>
-            </TouchableOpacity>
+              <ButtonText className="text-white font-semibold text-base">
+                {isLoading ? 'Registrazione in corso...' : 'Registrati'}
+              </ButtonText>
+            </Button>
           </Box>
-
-          <Box className="mb-3">
-            <Text className="text-sm text-muted-foreground mb-2">Username</Text>
-            <Box className="rounded-md border border-border overflow-hidden">
-              <Input placeholder="Scegli un username" value={username} onChangeText={setUsername}>
-                <InputField />
-              </Input>
-            </Box>
-          </Box>
-
-          <Box className="mb-3">
-            <Text className="text-sm text-muted-foreground mb-2">Email</Text>
-            <Box className="rounded-md border border-border overflow-hidden">
-              <Input placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none">
-                <InputField />
-              </Input>
-            </Box>
-          </Box>
-
-          <Box className="mb-3">
-            <Text className="text-sm text-muted-foreground mb-2">Password</Text>
-            <Box className="rounded-md border border-border overflow-hidden">
-              <Input placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry>
-                <InputField />
-              </Input>
-            </Box>
-          </Box>
-
-          <Box className="mb-3">
-            <Text className="text-sm text-muted-foreground mb-2">Conferma password</Text>
-            <Box className="rounded-md border border-border overflow-hidden">
-              <Input placeholder="Conferma password" value={confirm} onChangeText={setConfirm} secureTextEntry>
-                <InputField />
-              </Input>
-            </Box>
-          </Box>
-
-          {/* Visible, full-width primary button */}
-          <Button className="mt-4 w-full bg-primary shadow-md" onPress={onSubmit}>
-            <ButtonText className="text-primary-foreground">Registrati</ButtonText>
-          </Button>
-
         </Box>
       </Center>
-    </Box>
+    </ScrollView>
   );
 }
