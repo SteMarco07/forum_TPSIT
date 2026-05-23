@@ -17,10 +17,10 @@ class TopicCreate(TopicBase):
 class Topic(TopicBase, table=True):
     __tablename__ = "topics"
     
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    id: int = Field(primary_key=True)
     author_id: UUID = Field(foreign_key="users.id")
 
 # Output schema — what the API returns (replaces TopicResponse)
 class TopicResponse(TopicBase):
-    id: UUID
+    id: int
     author_id: UUID

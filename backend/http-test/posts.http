@@ -1,0 +1,53 @@
+### Post Routes
+### Base URL
+@baseUrl = http://localhost:8000
+@token = paste_your_token_here
+
+###
+
+### Get all posts
+GET {{baseUrl}}/posts/
+
+###
+
+### Get posts by topic
+GET {{baseUrl}}/posts/topic/1
+
+###
+
+@post_id = paste_your_post_id_here 
+
+### Get post by ID
+GET {{baseUrl}}/posts/{{post_id}}
+
+###
+
+### Create a post (protected)
+POST {{baseUrl}}/posts/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "My First Post",
+    "content_text": "This is the content of my first post",
+    "topic_id": 1
+}
+
+###
+
+### Update a post (protected, author only)
+PUT {{baseUrl}}/posts/{{post_id}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "My Updated Post",
+    "content_text": "This is the updated content",
+    "topic_id": 1
+}
+
+###
+
+### Delete a post (protected, author only)
+DELETE {{baseUrl}}/posts/{{post_id}}
+Authorization: Bearer {{token}}

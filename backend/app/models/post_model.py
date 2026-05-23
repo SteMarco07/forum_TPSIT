@@ -1,19 +1,22 @@
-from sqlalchemy import Column, String, text, Integer
-from sqlalchemy.dialects.postgresql import UUID
-from app.database import Base
-import uuid
+from sqlmodel import SQLModel, Field
+from uuid import UUID, uuid4
+from typing import Optional
 
-class Post(Base):
+class PostBase(SQLModel):
+    title: str
+    content_text: Optional[str] = None
+
+class PostCreate(PostBase):
+    topic_id: int
+
+class Post(PostBase, table=True):
     __tablename__ = "posts"
 
-    uuid = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,      # SQLAlchemy generates the UUID in Python
-        server_default=text("gen_random_uuid()"),  # fallback for raw SQL inserts
-    )
-    title = Column(String, nullable=False)
-    content = Column(String, nullable=False)
-    id_user = Column(UUID(as_uuid=True), nullable=False)
-    id_topic = Column(Integer, nullable=False)
-    
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    author_id: UUID = Field(foreign_key="users.id")
+    topic_id: int = Field(foreign_key="topics.id")
+
+class PostResponse(PostBase):
+    id: UUID
+    author_id: UUID
+    topic_id: int

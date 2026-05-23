@@ -1,11 +1,16 @@
 from sqlmodel import SQLModel, Field
+from enum import Enum
 from uuid import UUID, uuid4
 from typing import Optional
+
+class UserRole(str, Enum):
+    USER = "USER"
+    ADMIN = "ADMIN"
 
 class UserBase(SQLModel):
     username: str
     email: str
-    role: str = "USER"
+    role: UserRole = UserRole.USER
 
 class UserCreate(UserBase):
     password: str
@@ -18,3 +23,4 @@ class User(UserBase, table=True):
 
 class UserResponse(UserBase):
     id: UUID
+    role: UserRole

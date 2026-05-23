@@ -4,7 +4,7 @@ from sqlmodel import SQLModel
 from app.database import engine
 from app.models.user_model import User
 from app.models.topic_model import Topic
-from app.routers import user_router, auth_router, topic_router
+from app.routers import user_router, auth_router, topic_router, post_router
 
 SQLModel.metadata.create_all(engine)  # no bind= keyword here
 
@@ -21,6 +21,7 @@ app.add_middleware(
 app.include_router(auth_router.router)
 app.include_router(user_router.router)
 app.include_router(topic_router.router)
+app.include_router(post_router.router)
 
 @app.get("/test")
 async def root():

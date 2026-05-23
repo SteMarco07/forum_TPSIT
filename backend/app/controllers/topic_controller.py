@@ -6,7 +6,7 @@ from uuid import UUID
 def get_all_topics(db: Session):
     return db.query(Topic).all()
 
-def get_topic_by_id(topic_id: UUID, db: Session):
+def get_topic_by_id(topic_id: int, db: Session):
     topic = db.query(Topic).filter(Topic.id == topic_id).first()
     if not topic:
         raise HTTPException(status_code=404, detail="Topic not found")

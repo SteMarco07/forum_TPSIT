@@ -1,0 +1,33 @@
+### Topic Routes
+### Base URL
+@baseUrl = http://localhost:8000
+@token = paste_your_token_here
+
+###
+
+### Get all topics
+GET {{baseUrl}}/topics/
+
+###
+
+### Get topic by ID
+GET {{baseUrl}}/topics/1
+
+###
+
+### Create a topic (protected)
+POST {{baseUrl}}/topics/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "My First Topic",
+    "description": "This is a test topic",
+    "rules": "Be respectful"
+}
+
+###
+
+### Delete a topic (protected, author only)
+DELETE {{baseUrl}}/topics/1
+Authorization: Bearer {{token}}
