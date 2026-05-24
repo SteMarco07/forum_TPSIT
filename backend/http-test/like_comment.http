@@ -1,0 +1,21 @@
+### Likes on Comments Routes
+### Base URL
+@baseUrl = http://localhost:8000
+@token = paste_your_token_here
+
+###
+
+### Get all likes on a comment
+GET {{baseUrl}}/likes/comments/paste_comment_uuid_here
+
+###
+
+### Like a comment (protected)
+POST {{baseUrl}}/likes/comments/paste_comment_uuid_here
+Authorization: Bearer {{token}}
+
+###
+
+### Unlike a comment (protected)
+DELETE {{baseUrl}}/likes/comments/paste_comment_uuid_here
+Authorization: Bearer {{token}}

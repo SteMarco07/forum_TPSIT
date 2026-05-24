@@ -1,10 +1,16 @@
-from sqlalchemy import Column, Integer
-from sqlalchemy.dialects.postgresql import UUID
-from app.database import Base
+from sqlmodel import SQLModel, Field
+from uuid import UUID
 
-class LikeComment(Base):
+class LikeCommentBase(SQLModel):
+    comment_id: UUID
+
+class LikeComment(LikeCommentBase, table=True):
     __tablename__ = "likes_on_comments"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(UUID(as_uuid=True), nullable=False)
-    comment_id = Column(UUID(as_uuid=True), nullable=False)
+    id: int = Field(default=None, primary_key=True)
+    user_id: UUID = Field(foreign_key="users.id")
+    comment_id: UUID = Field(foreign_key="comments.id")
+
+class LikeCommentResponse(LikeCommentBase):
+    id: int
+    user_id: UUID
