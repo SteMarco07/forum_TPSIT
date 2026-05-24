@@ -20,7 +20,7 @@ def get_moderator(moderator_id: int, db: Session = Depends(get_db)):
 def assign_moderator(
     data: ModeratorCreate,
     db: Session = Depends(get_db),
-    _: dict = Depends(require_role("ADMIN")),   # only admins can assign
+    _: dict = Depends(require_role("ADMIN")),
 ):
     return moderator_controller.assign_moderator(data, db)
 
@@ -37,6 +37,6 @@ def update_moderator_role(
 def remove_moderator(
     moderator_id: int,
     db: Session = Depends(get_db),
-    _: dict = Depends(require_role("ADMIN")),   # only admins can remove
+    _: dict = Depends(require_role("ADMIN")),
 ):
     moderator_controller.remove_moderator(moderator_id, db)

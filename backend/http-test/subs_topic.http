@@ -1,0 +1,27 @@
+### Subs to Topic Routes
+### Base URL
+@baseUrl = http://localhost:8000
+@token = paste_your_token_here
+
+###
+
+### Get all subscribers of a topic
+GET {{baseUrl}}/subs/topic/1
+
+###
+
+### Get my subscriptions (protected)
+GET {{baseUrl}}/subs/me
+Authorization: Bearer {{token}}
+
+###
+
+### Subscribe to a topic (protected)
+POST {{baseUrl}}/subs/1
+Authorization: Bearer {{token}}
+
+###
+
+### Unsubscribe from a topic (protected)
+DELETE {{baseUrl}}/subs/1
+Authorization: Bearer {{token}}
