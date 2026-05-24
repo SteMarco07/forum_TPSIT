@@ -14,6 +14,12 @@ def get_user_by_id(user_id: UUID, db: Session):
     return user
 
 def create_user(data: UserCreate, db: Session):
+    user = db.query(User).filter(User.email == data.email or User.username == data.username).first()
+    if user and user.email == data.email:
+        raise HTTPException(status_code=409, detail="Email already in use")
+    if user and user.username == data.username:
+        raise HTTPException(status_code=409, detail="Username already taken")
+
     hashed = hash_password(data.password)
     user = User(username=data.username, email=data.email, password=hashed, role=data.role)
     db.add(user)
