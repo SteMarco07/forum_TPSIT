@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import {
-  ArrowBigDown,
+  
   ArrowBigUp,
   Clock3,
   Flame,
@@ -31,7 +31,7 @@ type Post = {
 const posts: Post[] = [
   {
     id: '1',
-    community: 'r/tpsit',
+    community: 't/tpsit',
     author: 'marco_dev',
     timeAgo: '2h',
     title: 'Pattern utile per separare store Zustand e chiamate API',
@@ -42,7 +42,7 @@ const posts: Post[] = [
   },
   {
     id: '2',
-    community: 'r/frontend',
+    community: 't/frontend',
     author: 'ui_ninja',
     timeAgo: '5h',
     title: 'UI forum: meglio timeline classica o card immersive?',
@@ -53,7 +53,7 @@ const posts: Post[] = [
   },
   {
     id: '3',
-    community: 'r/reactnative',
+    community: 't/reactnative',
     author: 'expo_builder',
     timeAgo: '1d',
     title: 'Expo Router: gestione route pubbliche e private',
@@ -66,10 +66,10 @@ const posts: Post[] = [
 
 export default function ForumHome() {
   const router = useRouter();
-  const [votes, setVotes] = useState<Record<string, 1 | -1 | 0>>({});
+  const [votes, setVotes] = useState<Record<string, 0 | 1>>({});
   const orderedPosts = posts;
 
-  function toggleVote(postId: string, value: 1 | -1) {
+  function toggleVote(postId: string, value: 1) {
     setVotes((prev) => {
       const current = prev[postId] ?? 0;
       return { ...prev, [postId]: current === value ? 0 : value };
@@ -150,9 +150,6 @@ export default function ForumHome() {
                       <ArrowBigUp size={24} color={selectedVote === 1 ? '#60a5fa' : '#94a3b8'} />
                     </TouchableOpacity>
                     <Text className="text-white font-bold my-1">{getScore(post)}</Text>
-                    <TouchableOpacity onPress={() => toggleVote(post.id, -1)}>
-                      <ArrowBigDown size={24} color={selectedVote === -1 ? '#f87171' : '#94a3b8'} />
-                    </TouchableOpacity>
                   </Box>
 
                   <Box className="flex-1 gap-2">
