@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { Box } from '@/components/ui/box';
 import { Center } from '@/components/ui/center';
 import { Text } from '@/components/ui/text';
@@ -8,15 +8,25 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { User, Mail, Lock, CheckCircle2 } from 'lucide-react-native';
+import { useAppStore } from '@/store/authStore';
 
 export default function Register() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({ username: '', email: '', password: '', confirm: '' });
+
+  // Store unico per gestire tutto lo stato
+  const username = useAppStore((state) => state.username);
+  const email = useAppStore((state) => state.email);
+  const password = useAppStore((state) => state.password);
+  const confirm = useAppStore((state) => state.confirm);
+  const isLoading = useAppStore((state) => state.isLoading);
+  const errors = useAppStore((state) => state.errors);
+
+  const setUsername = useAppStore((state) => state.setUsername);
+  const setEmail = useAppStore((state) => state.setEmail);
+  const setPassword = useAppStore((state) => state.setPassword);
+  const setConfirm = useAppStore((state) => state.setConfirm);
+  const setErrors = useAppStore((state) => state.setErrors);
+  const register = useAppStore((state) => state.register);
 
   function validateEmail(email: string) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -57,12 +67,14 @@ export default function Register() {
     setErrors(newErrors);
 
     if (!newErrors.username && !newErrors.email && !newErrors.password && !newErrors.confirm) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
+      try {
+        // Chiama la funzione di register dallo store
+        register(email, password);
         alert('Registrazione completata (demo)');
         router.push('/login');
-      }, 1500);
+      } catch (error) {
+        alert('Errore durante la registrazione');
+      }
     }
   }
 

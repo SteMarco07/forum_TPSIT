@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { Box } from '@/components/ui/box';
 import { Center } from '@/components/ui/center';
 import { Text } from '@/components/ui/text';
@@ -8,20 +8,28 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Mail, Lock, LogIn } from 'lucide-react-native';
+import { useAppStore } from '@/store/authStore';
 
 export default function Login() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({ email: '', password: '' });
+  
+  // Store unico per gestire tutto lo stato
+  const email = useAppStore((state) => state.email);
+  const password = useAppStore((state) => state.password);
+  const isLoading = useAppStore((state) => state.isLoading);
+  const errors = useAppStore((state) => state.errors);
+  
+  const setEmail = useAppStore((state) => state.setEmail);
+  const setPassword = useAppStore((state) => state.setPassword);
+  const setErrors = useAppStore((state) => state.setErrors);
+  const login = useAppStore((state) => state.login);
 
   function validateEmail(email: string) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   }
 
-  function onSubmit() {
+  async function onSubmit() {
     const newErrors = { email: '', password: '' };
     
     if (!email) {
@@ -39,11 +47,14 @@ export default function Login() {
     setErrors(newErrors);
 
     if (!newErrors.email && !newErrors.password) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
+      try {
+        // Chiama la funzione di login dallo store
+        const response = await login(email, password);
         alert('Login eseguito (demo)');
-      }, 1500);
+        // router.push('/dashboard'); // Uncomment per navigare dopo il login
+      } catch (error) {
+        alert('Errore durante il login');
+      }
     }
   }
 
@@ -58,7 +69,7 @@ export default function Login() {
             </Box>
             <Text className="text-4xl font-bold text-white">Accedi</Text>
             <Text className="text-sm text-slate-400 text-center">
-              Benvenuto nel forum della TPSIT
+              Benvenuto nel forum
             </Text>
           </Box>
 
