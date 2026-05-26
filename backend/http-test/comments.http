@@ -10,6 +10,12 @@ GET {{baseUrl}}/comments/post/paste_post_uuid_here
 
 ###
 
+### Get number of comments by post
+
+GET {{baseUrl}}/comments/post/paste_post_uuid_here/count
+
+###
+
 ### Get comment by ID
 GET {{baseUrl}}/comments/paste_comment_uuid_here
 

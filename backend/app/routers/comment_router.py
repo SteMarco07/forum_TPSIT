@@ -17,6 +17,10 @@ def list_comments_by_post(post_id: UUID, db: Session = Depends(get_db)):
 def get_comment(comment_id: UUID, db: Session = Depends(get_db)):
     return comment_controller.get_comment_by_id(comment_id, db)
 
+@router.get("/post/{post_id}/count")
+def get_number_of_comments_by_post(post_id: UUID, db: Session = Depends(get_db)):
+    return {"count": comment_controller.get_number_of_comments_by_post(post_id, db)}
+
 @router.post("/", response_model=CommentResponse, status_code=201)
 def create_comment(
     data: CommentCreate,
