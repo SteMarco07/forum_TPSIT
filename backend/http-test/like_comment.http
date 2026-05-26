@@ -10,6 +10,11 @@ GET {{baseUrl}}/likes/comments/paste_comment_uuid_here
 
 ###
 
+### Get number of likes by comment
+GET {{baseUrl}}/likes/comments/paste_comment_uuid_here/count
+
+###
+
 ### Like a comment (protected)
 POST {{baseUrl}}/likes/comments/paste_comment_uuid_here
 Authorization: Bearer {{token}}

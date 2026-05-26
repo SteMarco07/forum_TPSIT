@@ -6,6 +6,9 @@ from uuid import UUID
 def get_likes_by_post(post_id: UUID, db: Session):
     return db.query(LikePost).filter(LikePost.post_id == post_id).all()
 
+def get_number_of_likes_by_post(post_id: UUID, db: Session):
+    return db.query(LikePost).filter(LikePost.post_id == post_id).count()
+
 def like_post(post_id: UUID, user_id: UUID, db: Session):
     # Prevent duplicate likes
     existing = db.query(LikePost).filter(

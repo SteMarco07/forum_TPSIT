@@ -13,6 +13,10 @@ router = APIRouter(prefix="/likes/comments", tags=["Likes on Comments"])
 def get_likes(comment_id: UUID, db: Session = Depends(get_db)):
     return like_comment_controller.get_likes_by_comment(comment_id, db)
 
+@router.get("/comment/{comment_id}/count", response_model=LikeCommentResponse)
+def get_number_of_likes_by_comment(comment_id: UUID, db: Session = Depends(get_db)):
+    return {"count": like_comment_controller.get_number_of_likes_by_comment(comment_id, db)}
+
 @router.post("/{comment_id}", response_model=LikeCommentResponse, status_code=201)
 def like_comment(
     comment_id: UUID,

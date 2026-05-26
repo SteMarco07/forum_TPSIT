@@ -6,6 +6,9 @@ from uuid import UUID
 def get_likes_by_comment(comment_id: UUID, db: Session):
     return db.query(LikeComment).filter(LikeComment.comment_id == comment_id).all()
 
+def get_number_of_likes_by_comment(comment_id: UUID, db: Session):
+    return db.query(LikeComment).filter(LikeComment.comment_id == comment_id).count()
+
 def like_comment(comment_id: UUID, user_id: UUID, db: Session):
     existing = db.query(LikeComment).filter(
         LikeComment.comment_id == comment_id,

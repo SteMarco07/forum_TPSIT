@@ -10,6 +10,11 @@ GET {{baseUrl}}/likes/posts/paste_post_uuid_here
 
 ###
 
+### Get number of likes by post
+GET {{baseUrl}}/likes/posts/paste_post_uuid_here/count
+
+###
+
 ### Like a post (protected)
 POST {{baseUrl}}/likes/posts/paste_post_uuid_here
 Authorization: Bearer {{token}}
