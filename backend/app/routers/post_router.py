@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from uuid import UUID
 from app.database import get_db
-from app.models.post_model import PostCreate, PostResponse, PostFullResponse
+from app.schemas.general_schema import PostFullResponse
+from app.models.post_model import PostCreate, PostResponse
 from app.models.user_model import User
 from app.controllers import post_controller
 from app.controllers.general_controller import get_all_posts_full, get_post_full_by_topic
@@ -21,6 +22,10 @@ def list_posts_full(db: Session = Depends(get_db)):
 @router.get("/topic/{topic_id}", response_model=list[PostResponse])
 def list_posts_by_topic(topic_id: int, db: Session = Depends(get_db)):
     return post_controller.get_posts_by_topic(topic_id, db)
+
+@router.get("/topic/{topic_id}/full", response_model=list[PostFullResponse])
+def list_posts_full_by_topic(topic_id: int, db: Session = Depends(get_db)):
+    return get_post_full_by_topic(topic_id, db)
 
 @router.get("/{post_id}", response_model=PostResponse)
 def get_post(post_id: UUID, db: Session = Depends(get_db)):
