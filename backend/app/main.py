@@ -10,7 +10,7 @@ from app.routers import ( user_router, auth_router, topic_router,
 
 SQLModel.metadata.create_all(engine)
 
-app = FastAPI(title="My API")
+app = FastAPI(title="Forum API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

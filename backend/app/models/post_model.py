@@ -20,3 +20,10 @@ class PostResponse(PostBase):
     id: UUID
     author_id: UUID
     topic_id: int
+    
+class PostFullResponse(PostResponse):
+    author_username: str
+    topic_name: str
+    likes_count: int
+    comments_count: int
+    
