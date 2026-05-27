@@ -16,6 +16,7 @@ import {
   MessageSquareMore,
   Users,
 } from 'lucide-react-native';
+import NewPostModal from '@/components/NewPostModal';
 
 type Post = {
   id: string;
@@ -67,7 +68,9 @@ const posts: Post[] = [
 export default function ForumHome() {
   const router = useRouter();
   const [votes, setVotes] = useState<Record<string, 0 | 1>>({});
-  const orderedPosts = posts;
+  const [localPosts, setLocalPosts] = useState(posts);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const orderedPosts = localPosts;
 
   function toggleVote(postId: string, value: 1) {
     setVotes((prev) => {
@@ -79,6 +82,20 @@ export default function ForumHome() {
   function getScore(post: Post) {
     const delta = votes[post.id] ?? 0;
     return post.score + delta;
+  }
+
+  function handleAddPost(data: { topic: string; title: string; content: string }) {
+    const newPost: Post = {
+      id: Date.now().toString(),
+      community: data.topic,
+      author: 'you',
+      timeAgo: 'adesso',
+      title: data.title,
+      excerpt: data.content.length > 140 ? data.content.slice(0, 137) + '...' : data.content,
+      comments: 0,
+      score: 0,
+    };
+    setLocalPosts((p) => [newPost, ...p]);
   }
 
   return (
@@ -114,7 +131,7 @@ export default function ForumHome() {
                 <Bell size={18} color="#e2e8f0" />
               </TouchableOpacity>
 
-              <TouchableOpacity className="h-12 rounded-full border border-blue-400/30 bg-blue-600 px-5 flex-row items-center gap-2">
+              <TouchableOpacity className="h-12 rounded-full border border-blue-400/30 bg-blue-600 px-5 flex-row items-center gap-2" onPress={() => setIsModalVisible(true)}>
                 <Plus size={16} color="#ffffff" />
                 <Text className="text-white font-semibold">Crea Nuovo Post</Text>
               </TouchableOpacity>
@@ -183,6 +200,11 @@ export default function ForumHome() {
           })}
         </Box>
 
+        <NewPostModal
+          visible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          onSubmit={handleAddPost}
+        />
       </Box>
     </ScrollView>
   );
