@@ -13,6 +13,7 @@ const topics = ['t/tpsit', 't/frontend', 't/reactnative'];
 
 export default function NewPostModal({ visible, onClose, onSubmit }: Props) {
     const [topic, setTopic] = useState(topics[0]);
+    const [topicOpen, setTopicOpen] = useState(false);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
 
@@ -41,15 +42,28 @@ export default function NewPostModal({ visible, onClose, onSubmit }: Props) {
                     </Box>
 
                     <Text className="text-slate-300 mb-2">Topic</Text>
-                    <Box className="flex-row gap-2 mb-3">
-                        {topics.map((t) => (
-                            <TouchableOpacity
-                                key={t}
-                                onPress={() => setTopic(t)}
-                                className={`px-3 py-2 rounded-lg ${topic === t ? 'bg-blue-600' : 'bg-slate-800'}`}>
-                                <Text className={topic === t ? 'text-white' : 'text-slate-300'}>{t}</Text>
-                            </TouchableOpacity>
-                        ))}
+                    <Box className="mb-3 relative"> {/* parent relative so dropdown can be absolute */}
+                        <TouchableOpacity
+                            onPress={() => setTopicOpen((v) => !v)}
+                            className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 flex-row items-center justify-between">
+                            <Text className="text-slate-100">{topic}</Text>
+                        </TouchableOpacity>
+
+                        {topicOpen && (
+                            <Box className="absolute left-0 right-0 z-50 mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-lg">
+                                {topics.map((t, i) => (
+                                    <TouchableOpacity
+                                        key={t}
+                                        onPress={() => {
+                                            setTopic(t);
+                                            setTopicOpen(false);
+                                        }}
+                                        className={`px-3 py-2 ${t === topic ? 'bg-blue-600' : ''} ${i < topics.length - 1 ? 'border-b border-slate-700' : ''}`}>
+                                        <Text className={`${t === topic ? 'text-white' : 'text-slate-300'}`}>{t}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </Box>
+                        )}
                     </Box>
 
                     <Text className="text-slate-300 mb-2">Titolo</Text>
