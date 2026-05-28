@@ -37,7 +37,7 @@ export default function Register() {
     return value.length >= 3 && /^[a-zA-Z0-9_]+$/.test(value);
   }
 
-  function onSubmit() {
+  async function onSubmit() {
     const newErrors = { username: '', email: '', password: '', confirm: '' };
 
     if (!username) {
@@ -68,9 +68,9 @@ export default function Register() {
 
     if (!newErrors.username && !newErrors.email && !newErrors.password && !newErrors.confirm) {
       try {
-        register(email, password);
-        alert('Registrazione completata (demo)');
-        router.push('/login');
+        await register(email, password);
+        // Redirect to forum after successful registration
+        router.push('/forum');
       } catch (error) {
         alert('Errore durante la registrazione');
       }

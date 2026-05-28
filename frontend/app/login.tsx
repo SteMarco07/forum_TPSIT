@@ -50,6 +50,7 @@ export default function Login() {
       try {
         await login(email, password);
         alert('Login eseguito (demo)');
+        router.push('/forum');
       } catch (error) {
         alert('Errore durante il login');
       }
