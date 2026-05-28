@@ -1,0 +1,37 @@
+### User Routes
+### Base URL
+@baseUrl = http://localhost:8000
+@token = paste_your_token_here
+
+###
+
+### Get all users (protected)
+GET {{baseUrl}}/users/
+Authorization: Bearer {{token}}
+
+###
+
+@user_id = paste_your_user_id_here
+
+### Get user by ID
+GET {{baseUrl}}/users/{{user_id}}
+Authorization: Bearer {{token}}
+
+###
+
+### Get current user
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+
+###
+
+### Create a new user
+POST {{baseUrl}}/users/
+Content-Type: application/json
+
+{
+    "username": "newuser",
+    "email": "newuser@test.com",
+    "password": "newpassword",
+    "role": "USER"
+}

@@ -1,0 +1,26 @@
+### Likes on Posts Routes
+### Base URL
+@baseUrl = http://localhost:8000
+@token = paste_your_token_here
+
+###
+
+### Get all likes on a post
+GET {{baseUrl}}/likes/posts/paste_post_uuid_here
+
+###
+
+### Get number of likes by post
+GET {{baseUrl}}/likes/posts/paste_post_uuid_here/count
+
+###
+
+### Like a post (protected)
+POST {{baseUrl}}/likes/posts/paste_post_uuid_here
+Authorization: Bearer {{token}}
+
+###
+
+### Unlike a post (protected)
+DELETE {{baseUrl}}/likes/posts/paste_post_uuid_here
+Authorization: Bearer {{token}}

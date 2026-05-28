@@ -1,0 +1,50 @@
+### Comment Routes
+### Base URL
+@baseUrl = http://localhost:8000
+@token = paste_your_token_here
+
+###
+
+### Get comments by post
+GET {{baseUrl}}/comments/post/paste_post_uuid_here
+
+###
+
+### Get number of comments by post
+
+GET {{baseUrl}}/comments/post/paste_post_uuid_here/count
+
+###
+
+### Get comment by ID
+GET {{baseUrl}}/comments/paste_comment_uuid_here
+
+###
+
+### Create a comment (protected)
+POST {{baseUrl}}/comments/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "content_text": "This is my first comment",
+    "post_id": "paste_post_uuid_here"
+}
+
+###
+
+### Update a comment (protected, author only)
+PUT {{baseUrl}}/comments/paste_comment_uuid_here
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "content_text": "This is my updated comment",
+    "post_id": "paste_post_uuid_here"
+}
+
+###
+
+### Delete a comment (protected, author only)
+DELETE {{baseUrl}}/comments/paste_comment_uuid_here
+Authorization: Bearer {{token}}

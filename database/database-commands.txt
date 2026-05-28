@@ -3,58 +3,59 @@ CREATE SCHEMA public;
 
 CREATE TYPE USER_ROLE AS ENUM('USER', 'ADMIN');
 
-CREATE TABLE topics(
-    id SERIAL PRIMARY KEY,
-    title VARCHAR NOT NULL,
-    description TEXT NOT NULL,
-    rules TEXT NOT NULL
-);
-
 CREATE TABLE users(
-    uuid UUID PRIMARY KEY,
+    id UUID PRIMARY KEY,
     username VARCHAR UNIQUE NOT NULL,
     password VARCHAR NOT NULL,
     email VARCHAR UNIQUE NOT NULL,
     role USER_ROLE NOT NULL
 );
 
+CREATE TABLE topics(
+    id SERIAL PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    description TEXT NOT NULL,
+    rules TEXT NOT NULL,
+    author_id UUID NOT NULL REFERENCES users(id)
+);
+
 CREATE TABLE posts(
-    uuid UUID PRIMARY KEY,
+    id UUID PRIMARY KEY,
     title VARCHAR NOT NULL,
     content_text TEXT NOT NULL,
-    id_user UUID NOT NULL REFERENCES users(uuid),
-    id_topic INTEGER NOT NULL REFERENCES topics(id)
+    author_id UUID NOT NULL REFERENCES users(id),
+    topic_id INTEGER NOT NULL REFERENCES topics(id)
 );
 
 CREATE TABLE comments(
-    uuid UUID PRIMARY KEY,
+    id UUID PRIMARY KEY,
     content_text TEXT NOT NULL,
-    id_user UUID NOT NULL REFERENCES users(uuid),
-    id_post UUID NOT NULL REFERENCES posts(uuid)
+    author_id UUID NOT NULL REFERENCES users(id),
+    post_id UUID NOT NULL REFERENCES posts(id)
 );
 
 CREATE TABLE likes_on_comments(
     id SERIAL PRIMARY KEY,
-    id_user UUID NOT NULL REFERENCES users(uuid),
-    id_comment UUID NOT NULL REFERENCES comments(uuid)
+    user_id UUID NOT NULL REFERENCES users(id),
+    comment_id UUID NOT NULL REFERENCES comments(id)
 );
 
 CREATE TABLE likes_on_posts(
     id SERIAL PRIMARY KEY,
-    id_user UUID NOT NULL REFERENCES users(uuid),
-    id_post UUID NOT NULL REFERENCES posts(uuid)
+    user_id UUID NOT NULL REFERENCES users(id),
+    post_id UUID NOT NULL REFERENCES posts(id)
 );
 
 CREATE TABLE subs_to_topic(
     id SERIAL PRIMARY KEY,
-    id_user UUID NOT NULL REFERENCES users(uuid),
-    id_topic INTEGER NOT NULL REFERENCES topics(id)
+    user_id UUID NOT NULL REFERENCES users(id),
+    topic_id INTEGER NOT NULL REFERENCES topics(id)
 );
 
 CREATE TABLE moderators(
     id SERIAL PRIMARY KEY,
     role VARCHAR NOT NULL,
-    id_user UUID NOT NULL REFERENCES users(uuid),
-    id_topic INTEGER NOT NULL REFERENCES topics(id)
+    user_id UUID NOT NULL REFERENCES users(id),
+    topic_id INTEGER NOT NULL REFERENCES topics(id)
 );
 

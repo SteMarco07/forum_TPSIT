@@ -1,0 +1,39 @@
+### Moderator Routes
+### Base URL
+@baseUrl = http://localhost:8000
+@token = paste_admin_token_here
+
+###
+
+### Get all moderators for a topic
+GET {{baseUrl}}/moderators/topic/1
+
+###
+
+### Get moderator by ID
+GET {{baseUrl}}/moderators/1
+
+###
+
+### Assign a moderator (admin only)
+POST {{baseUrl}}/moderators/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "user_id": "paste_user_uuid_here",
+    "topic_id": 1,
+    "role": "moderator"
+}
+
+###
+
+### Update moderator role (admin only)
+PATCH {{baseUrl}}/moderators/1?role=senior_moderator
+Authorization: Bearer {{token}}
+
+###
+
+### Remove a moderator (admin only)
+DELETE {{baseUrl}}/moderators/1
+Authorization: Bearer {{token}}
