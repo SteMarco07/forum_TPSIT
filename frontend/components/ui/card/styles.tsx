@@ -3,14 +3,18 @@ import { isWeb } from '@gluestack-ui/utils/nativewind-utils';
 const baseStyle = isWeb ? 'flex flex-col relative z-0' : '';
 
 export const cardStyle = tva({
-  base: `${baseStyle} flex-col bg-card border border-border rounded-xl shadow-sm`,
+  base: baseStyle,
   variants: {
     size: {
-      default: 'p-4 gap-6',
-      sm: 'p-3 gap-3',
+      sm: 'p-3 rounded',
+      md: 'p-4 rounded-md',
+      lg: 'p-6 rounded-xl',
     },
-  },
-  defaultVariants: {
-    size: 'default',
+    variant: {
+      elevated: 'bg-background-0',
+      outline: 'border border-outline-200 ',
+      ghost: 'rounded-none',
+      filled: 'bg-background-50',
+    },
   },
 });

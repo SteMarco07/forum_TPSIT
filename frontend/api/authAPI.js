@@ -1,7 +1,6 @@
 // File API separato per tutte le chiamate al backend
 
 export async function loginAPI(loginData) {
-  // Dati finti - verranno implementati in seguito
   const response = {
     success: true,
     message: 'Login eseguito con successo',
@@ -20,7 +19,6 @@ export async function loginAPI(loginData) {
 }
 
 export async function registerAPI(registerData) {
-  // Dati finti - verranno implementati in seguito
   const response = {
     success: true,
     message: 'Registrazione eseguita con successo',
@@ -39,7 +37,6 @@ export async function registerAPI(registerData) {
 }
 
 export async function logoutAPI() {
-  // Dati finti - verranno implementati in seguito
   const response = {
     success: true,
     message: 'Logout eseguito con successo',

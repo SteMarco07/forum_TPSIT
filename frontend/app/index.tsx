@@ -9,7 +9,6 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // Replace root route with the login route so the app opens on /login
     router.replace('/login');
   }, [router]);
 

@@ -1,19 +1,16 @@
 import { Box } from '@/components/ui/box';
-import { Input, InputField } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import React, { useState } from 'react';
+import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import {
-  
   ArrowBigUp,
   Clock3,
-  Flame,
   MessageCircle,
   Plus,
   Search,
   Bell,
-  MessageSquareMore,
   Users,
 } from 'lucide-react-native';
 import NewPostModal from '@/components/NewPostModal';
@@ -48,7 +45,7 @@ const posts: Post[] = [
     timeAgo: '5h',
     title: 'UI forum: meglio timeline classica o card immersive?',
     excerpt:
-      'Mi ispira Reddit come UX base, ma vorrei aggiungere una metrica visiva per capire a colpo d\'occhio quali thread sono caldi.',
+      "Mi ispira Reddit come UX base, ma vorrei aggiungere una metrica visiva per capire a colpo d'occhio quali thread sono caldi.",
     comments: 39,
     score: 201,
   },
@@ -67,10 +64,11 @@ const posts: Post[] = [
 
 export default function ForumHome() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isCompact = width < 768;
   const [votes, setVotes] = useState<Record<string, 0 | 1>>({});
   const [localPosts, setLocalPosts] = useState(posts);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const orderedPosts = localPosts;
 
   function toggleVote(postId: string, value: 1) {
     setVotes((prev) => {
@@ -91,106 +89,96 @@ export default function ForumHome() {
       author: 'you',
       timeAgo: 'adesso',
       title: data.title,
-      excerpt: data.content.length > 140 ? data.content.slice(0, 137) + '...' : data.content,
+      excerpt: data.content.length > 140 ? `${data.content.slice(0, 137)}...` : data.content,
       comments: 0,
       score: 0,
     };
-    setLocalPosts((p) => [newPost, ...p]);
+
+    setLocalPosts((currentPosts) => [newPost, ...currentPosts]);
   }
 
   return (
-    <ScrollView className="flex-1 bg-linear-to-b from-slate-950 via-slate-900 to-slate-950">
-      <Box className="w-full max-w-7xl self-center px-4 py-4 gap-5">
-        <Box className="rounded-3xl border border-slate-700/50 bg-slate-950/90 px-5 py-4">
-          <Box className="flex-row items-center gap-4">
+    <ScrollView style={{ flex: 1, backgroundColor: '#020617' }} contentContainerStyle={{ flexGrow: 1 }}>
+      <Box className={`w-full self-center gap-5 px-4 ${isCompact ? 'py-4' : 'max-w-7xl py-4'}`}>
+        <Box className="rounded-3xl border border-slate-700/50 bg-slate-950/95 px-4 py-4 md:px-5">
+          <Box className={`gap-4 ${isCompact ? 'flex-col' : 'flex-row items-center'}`}>
             <Box className="flex-row items-center gap-3 pr-2">
-              <Box className="h-12 w-12 items-center justify-center rounded-2xl bg-white/10 border border-slate-600/60">
+              <Box className="h-12 w-12 items-center justify-center rounded-2xl border border-slate-600/60 bg-white/10">
                 <Users size={18} color="#f8fafc" />
               </Box>
               <Box>
-                <Text className="text-white text-3xl font-black leading-none">Forum</Text>
+                <Text className="text-3xl font-black leading-none text-white">Forum</Text>
               </Box>
             </Box>
 
-            <Box className="flex-1 rounded-full border border-slate-700 bg-slate-900 px-4 h-12 justify-center">
+            <Box className="h-12 flex-1 justify-center rounded-full border border-slate-700 bg-slate-900 px-4">
               <Box className="flex-row items-center gap-2 h-full">
                 <Search size={18} color="#94a3b8" />
-                <Input
-                  style={{ flex: 1, height: 48, borderWidth: 0, paddingVertical: 0 }}
+                <TextInput
                   placeholder="Trova qualsiasi cosa"
                   placeholderTextColor="#94a3b8"
-                >
-                  <InputField className="text-slate-100" />
-                </Input>
+                  style={{ flex: 1, height: 48, color: '#e2e8f0', paddingVertical: 0 }}
+                />
               </Box>
             </Box>
 
-            <Box className="flex-row items-center gap-2">
-
+            <Box className={`flex-row items-center gap-2 ${isCompact ? 'flex-wrap' : ''}`}>
               <TouchableOpacity className="h-12 w-12 items-center justify-center rounded-full border border-slate-700 bg-slate-900">
                 <Bell size={18} color="#e2e8f0" />
               </TouchableOpacity>
 
-              <TouchableOpacity className="h-12 rounded-full border border-blue-400/30 bg-blue-600 px-5 flex-row items-center gap-2" onPress={() => setIsModalVisible(true)}>
+              <TouchableOpacity
+                className="h-12 flex-row items-center gap-2 rounded-full border border-blue-400/30 bg-blue-600 px-5"
+                onPress={() => setIsModalVisible(true)}
+              >
                 <Plus size={16} color="#ffffff" />
-                <Text className="text-white font-semibold">Crea Nuovo Post</Text>
+                <Text className="font-semibold text-white">Crea Nuovo Post</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => router.push('/login')}
-                className="h-12 rounded-full border border-slate-600 bg-slate-900 px-5 items-center justify-center"
-              >
-                <Text className="text-slate-100 font-semibold">Accedi</Text>
+              <TouchableOpacity onPress={() => router.push('/login')} className="h-12 items-center justify-center rounded-full border border-slate-600 bg-slate-900 px-5">
+                <Text className="font-semibold text-slate-100">Accedi</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => router.push('/register')}
-                className="h-12 rounded-full bg-blue-600 px-5 items-center justify-center"
-              >
-                <Text className="text-white font-semibold">Crea</Text>
+              <TouchableOpacity onPress={() => router.push('/register')} className="h-12 items-center justify-center rounded-full bg-blue-600 px-5">
+                <Text className="font-semibold text-white">Crea</Text>
               </TouchableOpacity>
             </Box>
           </Box>
         </Box>
 
         <Box className="gap-4">
-          {orderedPosts.map((post) => {
+          {localPosts.map((post) => {
             const selectedVote = votes[post.id] ?? 0;
 
             return (
-              <Box
-                key={post.id}
-                className="rounded-2xl border border-slate-700/50 bg-slate-900/80 p-4"
-              >
+              <Box key={post.id} className="rounded-2xl border border-slate-700/50 bg-slate-900/80 p-4">
                 <Box className="flex-row">
-                  <Box className="items-center pr-3 mr-3 border-r border-slate-700/60">
+                  <Box className="mr-3 items-center border-r border-slate-700/60 pr-3">
                     <TouchableOpacity onPress={() => toggleVote(post.id, 1)}>
                       <ArrowBigUp size={24} color={selectedVote === 1 ? '#60a5fa' : '#94a3b8'} />
                     </TouchableOpacity>
-                    <Text className="text-white font-bold my-1">{getScore(post)}</Text>
+                    <Text className="my-1 font-bold text-white">{getScore(post)}</Text>
                   </Box>
 
                   <Box className="flex-1 gap-2">
                     <Box className="flex-row items-center justify-between">
-                      <Text className="text-slate-300 text-xs">
-                        {post.community} • u/{post.author}
-                      </Text>
+                      <Text className="text-xs text-slate-300">{post.community} • u/{post.author}</Text>
                       <Box className="flex-row items-center gap-1">
                         <Clock3 size={13} color="#94a3b8" />
-                        <Text className="text-slate-400 text-xs">{post.timeAgo}</Text>
+                        <Text className="text-xs text-slate-400">{post.timeAgo}</Text>
                       </Box>
                     </Box>
 
-                    <Text className="text-white text-lg font-bold">{post.title}</Text>
+                    <Text className="text-lg font-bold text-white">{post.title}</Text>
                     <Text className="text-slate-300">{post.excerpt}</Text>
 
-                    <Box className="flex-row items-center justify-between mt-2">
+                    <Box className="mt-2 flex-row items-center justify-between">
                       <Box className="flex-row items-center gap-1">
                         <MessageCircle size={16} color="#94a3b8" />
                         <Text className="text-slate-300">{post.comments} commenti</Text>
                       </Box>
 
                       <TouchableOpacity className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2">
-                        <Text className="text-slate-100 font-semibold">Apri</Text>
+                        <Text className="font-semibold text-slate-100">Apri</Text>
                       </TouchableOpacity>
                     </Box>
                   </Box>
