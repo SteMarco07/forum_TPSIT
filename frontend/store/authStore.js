@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { loginAPI, registerAPI, logoutAPI } from '@/api/authAPI';
 
-export const useAppStore = create((set) => ({
+export const useAppStore = create((set, get) => ({
   user: null,
   token: null,
   username: '',
@@ -43,25 +43,24 @@ export const useAppStore = create((set) => ({
     }
   },
 
-  register: async (email, password) => {
+  register: async (username, email, password) => {
     try {
       set({ isLoading: true });
 
       const registerData = {
+        username,
         email,
         password,
         timestamp: new Date().toISOString(),
       };
 
-      const response = await registerAPI(registerData);
+      await registerAPI(registerData);
 
-      set({
-        user: response.user,
-        token: response.token,
-        isLoading: false,
-      });
+      const loginResponse = await get().login(email, password);
 
-      return response;
+      set({ isLoading: false });
+
+      return loginResponse;
     } catch (error) {
       console.error('Register Error:', error);
       set({ isLoading: false });

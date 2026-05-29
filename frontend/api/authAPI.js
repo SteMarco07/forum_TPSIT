@@ -1,15 +1,46 @@
 // File API separato per tutte le chiamate al backend
 
+const API_BASE_URL ='https://localhost';
+
+async function requestJson(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.detail || data?.message || 'Richiesta fallita');
+  }
+
+  return data;
+}
+
 export async function loginAPI(loginData) {
+  const authResponse = await requestJson(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    body: JSON.stringify({
+      email: loginData.email,
+      password: loginData.password,
+    }),
+  });
+
+  const user = await requestJson(`${API_BASE_URL}/users/me`, {
+    headers: {
+      Authorization: `Bearer ${authResponse.access_token}`,
+    },
+  });
+
   const response = {
     success: true,
     message: 'Login eseguito con successo',
-    user: {
-      id: '123456',
-      email: loginData.email,
-      name: 'Marco Rossi',
-    },
-    token: 'fake-jwt-token-xyz789',
+    user,
+    token: authResponse.access_token,
+    tokenType: authResponse.token_type,
   };
 
   console.log('📤 Login Request:', loginData);
@@ -19,18 +50,25 @@ export async function loginAPI(loginData) {
 }
 
 export async function registerAPI(registerData) {
+  const payload = {
+    username: registerData.username,
+    email: registerData.email,
+    password: registerData.password,
+  };
+
+  const user = await requestJson(`${API_BASE_URL}/users/`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+
   const response = {
     success: true,
     message: 'Registrazione eseguita con successo',
-    user: {
-      id: '789012',
-      email: registerData.email,
-      name: 'Nuovo Utente',
-    },
-    token: 'fake-jwt-token-abc123',
+    user,
+    token: null,
   };
 
-  console.log('📤 Register Request:', registerData);
+  console.log('📤 Register Request:', payload);
   console.log('📥 Register Response:', response);
 
   return response;
