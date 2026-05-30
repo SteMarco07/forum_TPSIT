@@ -4,6 +4,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    networks:
+      - forum_network
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
@@ -18,6 +20,8 @@ services:
       dockerfile: app/Dockerfile
     expose:
       - "8000"
+    networks:
+      - forum_network
     volumes:
       - ./backend:/app
     environment:
@@ -30,3 +34,7 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+
+networks:
+  forum_network:
+    driver: bridge
