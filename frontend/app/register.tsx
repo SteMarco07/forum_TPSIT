@@ -68,7 +68,7 @@ export default function Register() {
 
     if (!newErrors.username && !newErrors.email && !newErrors.password && !newErrors.confirm) {
       try {
-        await register(email, password);
+        await register(username, email, password);
         // Redirect to forum after successful registration
         router.push('/forum');
       } catch (error) {
