@@ -69,10 +69,9 @@ export default function Register() {
     if (!newErrors.username && !newErrors.email && !newErrors.password && !newErrors.confirm) {
       try {
         await register(username, email, password);
-        // Redirect to forum after successful registration
         router.push('/forum');
       } catch (error) {
-        alert('Errore durante la registrazione');
+        console.error('Registration error:', error);
       }
     }
   }

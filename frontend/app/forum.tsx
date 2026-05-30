@@ -12,11 +12,13 @@ import {
   Search,
   Bell,
   Users,
+  LogOut,
 } from 'lucide-react-native';
 import NewPostModal from '@/components/NewPostModal';
 import NewTopicModal from '@/components/NewTopicModal';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
 import { useForumStore } from '@/store/forumStore';
+import { useAppStore } from '@/store/authStore';
 
 type Post = {
   id: string
@@ -41,6 +43,9 @@ export default function ForumHome() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isTopicModalVisible, setIsTopicModalVisible] = useState(false);
 
+  const user = useAppStore((s) => s.user);
+  const logout = useAppStore((s) => s.logout);
+
   function toggleVote(postId: string, value: 1) {
     setVotes((prev) => {
       const current = prev[postId] ?? 0;
@@ -61,6 +66,16 @@ export default function ForumHome() {
     }
   }
 
+  async function handleLogout() {
+    try {
+      // `logout()` in authStore gestisce la rimozione da AsyncStorage e il reset dello stato
+      await logout();
+      router.replace('/login');
+    } catch (e) {
+      alert('Errore durante il logout');
+    }
+  }
+
   useEffect(() => {
     fetchPosts()
   }, [fetchPosts])
@@ -71,53 +86,62 @@ export default function ForumHome() {
         <SafeAreaView edges={["top"]}>
           <Box className="rounded-3xl border border-slate-700/50 bg-slate-950/95 px-4 py-4 md:px-5">
             <Box className={`gap-4 ${isCompact ? 'flex-col' : 'flex-row items-center'}`}>
-            <Box className="flex-row items-center gap-3 pr-2">
-              <Box className="h-12 w-12 items-center justify-center rounded-2xl border border-slate-600/60 bg-white/10">
-                <Users size={18} color="#f8fafc" />
+              <Box className="flex-row items-center gap-3 pr-2">
+                <Box className="h-12 w-12 items-center justify-center rounded-2xl border border-slate-600/60 bg-white/10">
+                  <Users size={18} color="#f8fafc" />
+                </Box>
+                <Box>
+                  <Text className="text-3xl font-black leading-none text-white">Forum</Text>
+                </Box>
               </Box>
-              <Box>
-                <Text className="text-3xl font-black leading-none text-white">Forum</Text>
+
+              <Box className="h-12 flex-1 justify-center rounded-full border border-slate-700 bg-slate-900 px-4">
+                <Box className="flex-row items-center gap-2 h-full">
+                  <Search size={18} color="#94a3b8" />
+                  <TextInput
+                    placeholder="Trova qualsiasi cosa"
+                    placeholderTextColor="#94a3b8"
+                    style={{ flex: 1, height: 48, color: '#e2e8f0', paddingVertical: 0 }}
+                  />
+                </Box>
               </Box>
-            </Box>
 
-            <Box className="h-12 flex-1 justify-center rounded-full border border-slate-700 bg-slate-900 px-4">
-              <Box className="flex-row items-center gap-2 h-full">
-                <Search size={18} color="#94a3b8" />
-                <TextInput
-                  placeholder="Trova qualsiasi cosa"
-                  placeholderTextColor="#94a3b8"
-                  style={{ flex: 1, height: 48, color: '#e2e8f0', paddingVertical: 0 }}
-                />
+              <Box className={`flex-row items-center gap-2 ${isCompact ? 'flex-wrap' : ''}`}>
+                
+                {!user ? (
+                  <>
+                    <TouchableOpacity onPress={() => router.push('/login')} className="h-12 items-center justify-center rounded-full border border-slate-600 bg-slate-900 px-5">
+                      <Text className="font-semibold text-slate-100">Accedi</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.push('/register')} className="h-12 items-center justify-center rounded-full bg-blue-600 px-5">
+                      <Text className="font-semibold text-white">Crea</Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <>
+                    <TouchableOpacity
+                      className="h-12 flex-row items-center gap-2 rounded-full border border-blue-400/30 bg-blue-600 px-5"
+                      onPress={() => setIsModalVisible(true)}
+                    >
+                      <Plus size={16} color="#ffffff" />
+                      <Text className="font-semibold text-white">Crea Nuovo Post</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => setIsTopicModalVisible(true)}
+                      className="h-12 items-center justify-center rounded-full border border-green-500 bg-green-600 px-4"
+                    >
+                      <Text className="font-semibold text-white">Crea Topic</Text>
+                    </TouchableOpacity>
+
+
+                    <TouchableOpacity onPress={handleLogout} className="h-12 flex-row items-center gap-2 rounded-full border border-red-500 bg-red-600 px-4">
+                      <LogOut size={16} color="#fff" />
+                      <Text className="font-semibold text-white">Logout</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
               </Box>
-            </Box>
-
-            <Box className={`flex-row items-center gap-2 ${isCompact ? 'flex-wrap' : ''}`}>
-              <TouchableOpacity className="h-12 w-12 items-center justify-center rounded-full border border-slate-700 bg-slate-900">
-                <Bell size={18} color="#e2e8f0" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className="h-12 flex-row items-center gap-2 rounded-full border border-blue-400/30 bg-blue-600 px-5"
-                onPress={() => setIsModalVisible(true)}
-              >
-                <Plus size={16} color="#ffffff" />
-                <Text className="font-semibold text-white">Crea Nuovo Post</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => setIsTopicModalVisible(true)}
-                className="h-12 items-center justify-center rounded-full border border-green-500 bg-green-600 px-4"
-              >
-                <Text className="font-semibold text-white">Crea Topic</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => router.push('/login')} className="h-12 items-center justify-center rounded-full border border-slate-600 bg-slate-900 px-5">
-                <Text className="font-semibold text-slate-100">Accedi</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push('/register')} className="h-12 items-center justify-center rounded-full bg-blue-600 px-5">
-                <Text className="font-semibold text-white">Crea</Text>
-              </TouchableOpacity>
-            </Box>
             </Box>
           </Box>
         </SafeAreaView>

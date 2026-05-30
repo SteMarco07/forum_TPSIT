@@ -48,11 +48,11 @@ export default function Login() {
 
     if (!newErrors.email && !newErrors.password) {
       try {
-        await login(email, password);
-        alert('Login eseguito (demo)');
+        const response = await login(email, password);
+        console.log('Login response:', response);
         router.push('/forum');
       } catch (error) {
-        alert('Errore durante il login');
+        console.error('Login error:', error);
       }
     }
   }
@@ -140,6 +140,7 @@ export default function Login() {
                 {isLoading ? 'Accesso in corso...' : 'Accedi'}
               </ButtonText>
             </Button>
+
           </Box>
         </Box>
       </Center>
