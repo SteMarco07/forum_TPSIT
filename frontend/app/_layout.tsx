@@ -10,10 +10,11 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { useColorScheme } from '@/components/useColorScheme';
-import { Slot, usePathname } from 'expo-router';
+import { Slot, usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { MoonIcon, SunIcon, SlashIcon } from '@/components/ui/icon';
+import { useAppStore } from '@/store/authStore';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -28,24 +29,60 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  const [styleLoaded, setStyleLoaded] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
+    const unsubFinishHydration = useAppStore.persist.onFinishHydration(() => {
+      setIsHydrated(true);
+    });
+
+    if (useAppStore.persist.hasHydrated()) {
+      setIsHydrated(true);
+    }
+
+    return () => {
+      unsubFinishHydration();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (loaded && isHydrated) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, isHydrated]);
+
+  if (!loaded || !isHydrated) {
+    return null;
+  }
+
   return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const token = useAppStore((state) => state.token);
   const systemColorScheme = useColorScheme();
   const [mode, setMode] = useState<'system' | 'light' | 'dark'>('system');
+
+  useEffect(() => {
+    if (!token) {
+      // If there is no token, only allow login and register
+      if (pathname !== '/login' && pathname !== '/register') {
+        router.replace('/login');
+      }
+    } else {
+      // If there is a token, prevent visiting login, register or root route
+      if (pathname === '/login' || pathname === '/register' || pathname === '/') {
+        router.replace('/forum');
+      }
+    }
+  }, [token, pathname]);
 
   // Determine effective color scheme
   const effectiveColorScheme = mode === 'system'
