@@ -1,27 +1,9 @@
-// File API separato per tutte le chiamate al backend
+import { requestJson} from './generalAPI';
 
-const API_BASE_URL ='https://localhost';
 
-async function requestJson(url, options = {}) {
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-  });
-
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    throw new Error(data?.detail || data?.message || 'Richiesta fallita');
-  }
-
-  return data;
-}
 
 export async function loginAPI(loginData) {
-  const authResponse = await requestJson(`${API_BASE_URL}/auth/login`, {
+  const authResponse = await requestJson(`/auth/login`, {
     method: 'POST',
     body: JSON.stringify({
       email: loginData.email,
@@ -29,7 +11,7 @@ export async function loginAPI(loginData) {
     }),
   });
 
-  const user = await requestJson(`${API_BASE_URL}/users/me`, {
+  const user = await requestJson(`/users/me`, {
     headers: {
       Authorization: `Bearer ${authResponse.access_token}`,
     },
@@ -56,7 +38,7 @@ export async function registerAPI(registerData) {
     password: registerData.password,
   };
 
-  const user = await requestJson(`${API_BASE_URL}/users/`, {
+  const user = await requestJson(`/users/`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });

@@ -1,4 +1,4 @@
-// API helper per posts e topics (mocked, sviluppamento)
+import { requestJson} from './generalAPI'
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
