@@ -4,6 +4,10 @@ export async function getPosts() {
   return requestJson('/posts/full')
 }
 
+export async function getPostById(postId) {
+  return requestJson(`/posts/${postId}`)
+}
+
 export async function createPost(post, token) {
   return requestJsonWithToken('/posts/', token, {
     method: 'POST',
@@ -34,4 +38,27 @@ export async function getPostsByTopic(topicId) {
   return requestJson(`/posts/topic/${topicId}/full`)
 }
 
-export default { getPosts, createPost, getTopics, createTopic, getPostsByTopic }
+export async function getCommentsByPost(postId) {
+  return requestJson(`/comments/post/${postId}`)
+}
+
+export async function createComment(comment, token) {
+  return requestJsonWithToken('/comments/', token, {
+    method: 'POST',
+    body: JSON.stringify({
+      content_text: comment.content_text,
+      post_id: comment.post_id,
+    }),
+  })
+}
+
+export default {
+  getPosts,
+  createPost,
+  getTopics,
+  createTopic,
+  getPostsByTopic,
+  getPostById,
+  getCommentsByPost,
+  createComment,
+}

@@ -14,8 +14,10 @@ class Comment(CommentBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     author_id: UUID = Field(foreign_key="users.id")
     post_id: UUID = Field(foreign_key="posts.id")
+    model_config = {"from_attributes": True, "extra": "allow"}
 
 class CommentResponse(CommentBase):
     id: UUID
     author_id: UUID
     post_id: UUID
+    author_username: str

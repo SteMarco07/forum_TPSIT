@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { ArrowBigUp, MessageCircle } from 'lucide-react-native';
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export default function PostCard({ post, onPressTopic }: Props) {
+  const router = useRouter();
   const [vote, setVote] = useState<0 | 1>(0);
 
   function toggleVote() {
@@ -65,7 +67,10 @@ export default function PostCard({ post, onPressTopic }: Props) {
               <Text className="text-slate-300">{post.comments_count} commenti</Text>
             </Box>
 
-            <TouchableOpacity className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2">
+            <TouchableOpacity
+              onPress={() => router.push(`/post/${post.id}`)}
+              className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2"
+            >
               <Text className="font-semibold text-slate-100">Apri</Text>
             </TouchableOpacity>
           </Box>

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getPosts, createPost, getTopics, createTopic, getPostsByTopic } from '@/api/forumAPI'
+import { getPosts, createPost, getTopics, createTopic, getPostsByTopic, getPostById, getCommentsByPost, createComment } from '@/api/forumAPI'
 import { useAppStore } from './authStore'
 
 // Forum store: gestisce posts e topics usando gli helper in /api/forumAPI.js
@@ -7,10 +7,16 @@ export const useForumStore = create((set, get) => ({
   posts: [],
   topics: [],
   topicPosts: [],
+  currentPost: null,
+  currentPostComments: [],
+  currentPostCommentsPostId: null,
   loadingPosts: false,
   loadingTopics: false,
   loadingTopicPosts: false,
+  loadingCurrentPost: false,
+  loadingComments: false,
   error: null,
+
 
   fetchPosts: async () => {
     set({ loadingPosts: true, error: null })
@@ -98,6 +104,86 @@ export const useForumStore = create((set, get) => ({
       return created
     } catch (e) {
       set((state) => ({ topics: state.topics.filter((t) => t.id !== tempId), error: e.message || String(e) }))
+      throw e
+    }
+  },
+
+  fetchPostById: async (postId) => {
+    set({ loadingCurrentPost: true, error: null })
+    try {
+      const data = await getPostById(postId)
+      set({ currentPost: data, loadingCurrentPost: false })
+    } catch (e) {
+      set({ error: e.message || String(e), loadingCurrentPost: false })
+    }
+  },
+
+  fetchCommentsByPost: async (postId, options = {}) => {
+    const force = Boolean(options.force)
+    const { currentPostCommentsPostId } = get()
+
+    if (!force && String(currentPostCommentsPostId) === String(postId)) {
+      return
+    }
+
+    set({
+      loadingComments: true,
+      error: null,
+      currentPostComments: String(currentPostCommentsPostId) === String(postId) ? get().currentPostComments : [],
+    })
+    try {
+      const data = await getCommentsByPost(postId)
+      console.log('Fetched comments for post', postId, data)
+      set({ currentPostComments: data, currentPostCommentsPostId: postId, loadingComments: false })
+    } catch (e) {
+      set({ error: e.message || String(e), loadingComments: false })
+    }
+  },
+
+  addComment: async (commentData) => {
+    try {
+      const token = useAppStore.getState().token
+      const user = useAppStore.getState().user
+
+      const created = await createComment({
+        content_text: commentData.content_text,
+        post_id: commentData.post_id,
+      }, token)
+
+      const fullCreated = {
+        ...created,
+        author_username: user?.username || 'anonymous'
+      }
+
+      set((state) => {
+        const isCurrentPost = String(state.currentPostCommentsPostId) === String(commentData.post_id)
+        const updatedCurrentPost = state.currentPost && state.currentPost.id === commentData.post_id
+          ? { ...state.currentPost, comments_count: (state.currentPost.comments_count || 0) + 1 }
+          : state.currentPost;
+
+        const updatedPosts = state.posts.map((post) => (
+          post.id === commentData.post_id
+            ? { ...post, comments_count: (post.comments_count || 0) + 1 }
+            : post
+        ));
+
+        const updatedTopicPosts = state.topicPosts.map((post) => (
+          post.id === commentData.post_id
+            ? { ...post, comments_count: (post.comments_count || 0) + 1 }
+            : post
+        ));
+
+        return {
+          currentPostComments: isCurrentPost ? [...state.currentPostComments, fullCreated] : state.currentPostComments,
+          currentPost: updatedCurrentPost,
+          posts: updatedPosts,
+          topicPosts: updatedTopicPosts
+        };
+      })
+      
+      return fullCreated
+    } catch (e) {
+      set({ error: e.message || String(e) })
       throw e
     }
   },
