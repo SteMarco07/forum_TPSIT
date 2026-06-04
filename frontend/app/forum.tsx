@@ -5,8 +5,6 @@ import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import {
-  ArrowBigUp,
-  MessageCircle,
   Plus,
   Search,
   Bell,
@@ -14,6 +12,7 @@ import {
   LogOut,
 } from 'lucide-react-native';
 import NewPostModal from '@/components/NewPostModal';
+import PostCard from '@/components/PostCard';
 import NewTopicModal from '@/components/NewTopicModal';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
 import { useForumStore } from '@/store/forumStore';
@@ -35,7 +34,6 @@ export default function ForumHome() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const isCompact = width < 768;
-  const [votes, setVotes] = useState<Record<string, 0 | 1>>({});
   const localPosts = useForumStore((s: { posts: any[] }) => s.posts) as Post[];
   const fetchPosts = useForumStore((s: any) => s.fetchPosts);
   const fetchTopics = useForumStore((s: any) => s.fetchTopics);
@@ -47,17 +45,7 @@ export default function ForumHome() {
   const user = useAppStore((s) => s.user);
   const logout = useAppStore((s) => s.logout);
 
-  function toggleVote(postId: string, value: 1) {
-    setVotes((prev) => {
-      const current = prev[postId] ?? 0;
-      return { ...prev, [postId]: current === value ? 0 : value };
-    });
-  }
 
-  function getScore(post: Post) {
-    const delta = votes[post.id] ?? 0;
-    return post.likes_count + delta;
-  }
 
   async function handleAddPost(data: { topic: string; title: string; content: string }) {
     try {
@@ -149,44 +137,13 @@ export default function ForumHome() {
         </SafeAreaView>
 
         <Box className="gap-4">
-          {localPosts.map((localPost) => {
-            const selectedVote = votes[localPost.id] ?? 0;
-
-            return (
-              <Box key={localPost.id} className="rounded-2xl border border-slate-700/50 bg-slate-900/80 p-4">
-                <Box className="flex-row">
-                  <Box className="mr-3 items-center border-r border-slate-700/60 pr-3">
-                    <TouchableOpacity onPress={() => toggleVote(localPost.id, 1)}>
-                      <ArrowBigUp size={24} color={selectedVote === 1 ? '#60a5fa' : '#94a3b8'} />
-                    </TouchableOpacity>
-                    <Text className="my-1 font-bold text-white">{getScore(localPost)}</Text>
-                  </Box>
-
-                  <Box className="flex-1 gap-2">
-                    <Box className="flex-row items-center justify-between">
-                      <Text className="text-xs text-slate-300">t/{localPost.topic_name} • u/{localPost.author_username}</Text>
-                    </Box>
-
-                    <Text className="text-lg font-bold text-white">{localPost.title}</Text>
-                    {localPost.content_text ? (
-                      <Text className="text-slate-300">{localPost.content_text}</Text>
-                    ) : null}
-
-                    <Box className="mt-2 flex-row items-center justify-between">
-                      <Box className="flex-row items-center gap-1">
-                        <MessageCircle size={16} color="#94a3b8" />
-                        <Text className="text-slate-300">{localPost.comments_count} commenti</Text>
-                      </Box>
-
-                      <TouchableOpacity className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2">
-                        <Text className="font-semibold text-slate-100">Apri</Text>
-                      </TouchableOpacity>
-                    </Box>
-                  </Box>
-                </Box>
-              </Box>
-            );
-          })}
+          {localPosts.map((localPost) => (
+            <PostCard
+              key={localPost.id}
+              post={localPost}
+              onPressTopic={(topicId) => router.push(`/topic/${topicId}`)}
+            />
+          ))}
         </Box>
 
         <NewPostModal

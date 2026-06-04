@@ -1,13 +1,15 @@
 import { create } from 'zustand';
-import { getPosts, createPost, getTopics, createTopic } from '@/api/forumAPI'
+import { getPosts, createPost, getTopics, createTopic, getPostsByTopic } from '@/api/forumAPI'
 import { useAppStore } from './authStore'
 
 // Forum store: gestisce posts e topics usando gli helper in /api/forumAPI.js
 export const useForumStore = create((set, get) => ({
   posts: [],
   topics: [],
+  topicPosts: [],
   loadingPosts: false,
   loadingTopics: false,
+  loadingTopicPosts: false,
   error: null,
 
   fetchPosts: async () => {
@@ -17,6 +19,16 @@ export const useForumStore = create((set, get) => ({
       set({ posts: data, loadingPosts: false })
     } catch (e) {
       set({ error: e.message || String(e), loadingPosts: false })
+    }
+  },
+
+  fetchPostsByTopic: async (topicId) => {
+    set({ loadingTopicPosts: true, error: null })
+    try {
+      const data = await getPostsByTopic(topicId)
+      set({ topicPosts: data, loadingTopicPosts: false })
+    } catch (e) {
+      set({ error: e.message || String(e), loadingTopicPosts: false })
     }
   },
 

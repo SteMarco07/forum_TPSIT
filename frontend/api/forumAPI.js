@@ -30,4 +30,8 @@ export async function createTopic(topic, token) {
   })
 }
 
-export default { getPosts, createPost, getTopics, createTopic }
+export async function getPostsByTopic(topicId) {
+  return requestJson(`/posts/topic/${topicId}/full`)
+}
+
+export default { getPosts, createPost, getTopics, createTopic, getPostsByTopic }
