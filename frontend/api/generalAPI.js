@@ -17,3 +17,13 @@ export async function requestJson(url, options = {}) {
 
   return data;
 }
+
+export async function requestJsonWithToken(url, token, options = {}) {
+  return requestJson(url, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(options.headers || {}),
+    },
+  });
+}

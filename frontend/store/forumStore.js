@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { getPosts, createPost, getTopics, createTopic } from '@/api/forumAPI'
+import { useAppStore } from './authStore'
 
 // Forum store: gestisce posts e topics usando gli helper in /api/forumAPI.js
 export const useForumStore = create((set, get) => ({
@@ -20,27 +21,45 @@ export const useForumStore = create((set, get) => ({
   },
 
   addPost: async (post) => {
-    // optimistic update
-    const tempId = `temp-${Date.now()}`
-    const temp = {
-      id: tempId,
-      community: post.topic || 't/general',
-      author: post.author || 'you',
-      timeAgo: 'adesso',
-      title: post.title,
-      excerpt: post.content?.length > 140 ? `${post.content.slice(0, 137)}...` : post.content,
-      comments: 0,
-      score: 0,
-    }
-    set((state) => ({ posts: [temp, ...state.posts] }))
-
     try {
-      const created = await createPost(post)
-      set((state) => ({ posts: state.posts.map((p) => (p.id === tempId ? created : p)) }))
-      return created
+      const token = useAppStore.getState().token
+      const user = useAppStore.getState().user
+
+      let topics = get().topics
+      if (topics.length === 0) {
+        topics = await getTopics()
+        set({ topics })
+      }
+
+      const topicTitle = post.topic ? post.topic.replace(/^t\//, '') : 'general'
+      const foundTopic = topics.find((t) => t.title.toLowerCase() === topicTitle.toLowerCase())
+
+      if (!foundTopic) {
+        throw new Error('Topic non trovato')
+      }
+
+      const created = await createPost({
+        title: post.title,
+        content_text: post.content,
+        topic_id: foundTopic.id,
+      }, token)
+
+      const fullCreated = {
+        id: created.id,
+        title: created.title,
+        content_text: created.content_text,
+        author_id: created.author_id,
+        topic_id: created.topic_id,
+        author_username: user?.username || '',
+        topic_name: foundTopic.title,
+        likes_count: 0,
+        comments_count: 0,
+      }
+
+      set((state) => ({ posts: [fullCreated, ...state.posts] }))
+      return fullCreated
     } catch (e) {
-      // rollback
-      set((state) => ({ posts: state.posts.filter((p) => p.id !== tempId), error: e.message || String(e) }))
+      set({ error: e.message || String(e) })
       throw e
     }
   },
@@ -61,7 +80,8 @@ export const useForumStore = create((set, get) => ({
     set((state) => ({ topics: [temp, ...state.topics] }))
 
     try {
-      const created = await createTopic(topic)
+      const token = useAppStore.getState().token
+      const created = await createTopic(topic, token)
       set((state) => ({ topics: state.topics.map((t) => (t.id === tempId ? created : t)) }))
       return created
     } catch (e) {

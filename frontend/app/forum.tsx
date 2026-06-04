@@ -6,7 +6,6 @@ import { useRouter } from 'expo-router';
 import { ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import {
   ArrowBigUp,
-  Clock3,
   MessageCircle,
   Plus,
   Search,
@@ -22,13 +21,14 @@ import { useAppStore } from '@/store/authStore';
 
 type Post = {
   id: string
-  community: string
-  author: string
-  timeAgo: string
   title: string
-  excerpt: string
-  comments: number
-  score: number
+  content_text: string | null
+  author_id: string
+  topic_id: number
+  author_username: string
+  topic_name: string
+  likes_count: number
+  comments_count: number
 }
 
 export default function ForumHome() {
@@ -38,6 +38,7 @@ export default function ForumHome() {
   const [votes, setVotes] = useState<Record<string, 0 | 1>>({});
   const localPosts = useForumStore((s: { posts: any[] }) => s.posts) as Post[];
   const fetchPosts = useForumStore((s: any) => s.fetchPosts);
+  const fetchTopics = useForumStore((s: any) => s.fetchTopics);
   const addPost = useForumStore((s: any) => s.addPost);
   const addTopic = useForumStore((s: any) => s.addTopic);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -55,7 +56,7 @@ export default function ForumHome() {
 
   function getScore(post: Post) {
     const delta = votes[post.id] ?? 0;
-    return post.score + delta;
+    return post.likes_count + delta;
   }
 
   async function handleAddPost(data: { topic: string; title: string; content: string }) {
@@ -78,7 +79,8 @@ export default function ForumHome() {
 
   useEffect(() => {
     fetchPosts()
-  }, [fetchPosts])
+    fetchTopics()
+  }, [fetchPosts, fetchTopics])
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#020617' }} contentContainerStyle={{ flexGrow: 1 }}>
@@ -162,20 +164,18 @@ export default function ForumHome() {
 
                   <Box className="flex-1 gap-2">
                     <Box className="flex-row items-center justify-between">
-                      <Text className="text-xs text-slate-300">{localPost.community} • u/{localPost.author}</Text>
-                      <Box className="flex-row items-center gap-1">
-                        <Clock3 size={13} color="#94a3b8" />
-                        <Text className="text-xs text-slate-400">{localPost.timeAgo}</Text>
-                      </Box>
+                      <Text className="text-xs text-slate-300">t/{localPost.topic_name} • u/{localPost.author_username}</Text>
                     </Box>
 
                     <Text className="text-lg font-bold text-white">{localPost.title}</Text>
-                    <Text className="text-slate-300">{localPost.excerpt}</Text>
+                    {localPost.content_text ? (
+                      <Text className="text-slate-300">{localPost.content_text}</Text>
+                    ) : null}
 
                     <Box className="mt-2 flex-row items-center justify-between">
                       <Box className="flex-row items-center gap-1">
                         <MessageCircle size={16} color="#94a3b8" />
-                        <Text className="text-slate-300">{localPost.comments} commenti</Text>
+                        <Text className="text-slate-300">{localPost.comments_count} commenti</Text>
                       </Box>
 
                       <TouchableOpacity className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2">

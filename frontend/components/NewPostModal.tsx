@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, TouchableOpacity, TextInput } from 'react-native';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
+import { useForumStore } from '@/store/forumStore';
 
 type Props = {
   visible: boolean;
@@ -9,22 +10,24 @@ type Props = {
   onSubmit: (data: { topic: string; title: string; content: string }) => void;
 };
 
-const topics = ['t/tpsit', 't/frontend', 't/reactnative'];
-
 export default function NewPostModal({ visible, onClose, onSubmit }: Props) {
-  const [topic, setTopic] = useState(topics[0]);
+  const storeTopics = useForumStore((state) => state.topics);
+  const topics = storeTopics.length > 0 ? storeTopics.map((t) => `t/${t.title}`) : ['t/general'];
+
+  const [topic, setTopic] = useState('t/general');
   const [topicOpen, setTopicOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
   useEffect(() => {
-    if (!visible) {
+    if (visible) {
       setTopic(topics[0]);
+    } else {
       setTitle('');
       setContent('');
       setTopicOpen(false);
     }
-  }, [visible]);
+  }, [visible, storeTopics]);
 
   function handleSubmit() {
     if (!title.trim() || !content.trim()) return;
